@@ -1,10 +1,41 @@
 {
+  "_codec/c1": {
+    "codec.js": "805d2af481eedb10d4cbfdf99a707e5d0e85e1b2baaf04e996f44ae252262141"
+  },
+  "_engine/manifold-3.5.5": {
+    "LICENSE": "c71d239df91726fc519c6eb72d318ec65820627232b2f796219e87dcf35d0ab4",
+    "manifold.js": "ca3c8a88df63bb3083013d1eb7f700bf23216594f6e98a2566e34f55d7341ce8",
+    "manifold.wasm": "b172438703ef72dea983481a9a0328d43a9f09e224f6ab093e7bbc99f4372314"
+  },
+  "_fonts/atkinson-hyperlegible-bold": {
+    "OFL.txt": "f32d22b3908fcad2c86a74000614ec22e6a7f66ea7e867e616026a27aebdc143",
+    "font.ttf": "5a3b0c8cc8ca545155150b4512a1fa248298df121c50d6557e651e61fbdab92f"
+  },
+  "_kit/k1": {
+    "kit.js": "6c65824222525486fcf310b6e61c05b22e740f33126990c053c1aba4cefd0abb"
+  },
+  "_lib/opentype-1.3.4": {
+    "LICENSE": "a5b87c9bc191e7f9c06b07bd7cbbed3ed846dfdb50e859484b2c245aa1ab2e61",
+    "opentype.module.js": "8d79d17388114a29d74681dfaed84068b1d7d9b4e39a9544fb6406d25579ad8f"
+  },
   "baseplate/v1": {
     "manifest.json": "3941091a44b47d57131ddb1d5e6e401e3d419de5ad230eb01f28dd08fc248db2",
     "model.sc": "3d1ca97580b1c5617c14f4f37460e48a8511af74301d2e9584a084236307a82a"
   },
+  "baseplate/v2": {
+    "manifest.json": "38565e16d9f69ba931ce7265648a53e7f6f6b955a623d8775ce239c3b758b8ee",
+    "model.js": "a7168c34c7884853ceb532dca192eff723d1a7a00b4fbf06455209cb40e31039"
+  },
   "bin/v1": {
     "manifest.json": "234f073386fef715e6f0b94cd6d8ba48cc432ef9a1cd13d290d2732239d6c220",
     "model.sc": "3209ad58113719fcd746379b22f9aca94988b0e1689773291858be1cc38c270f"
+  },
+  "bin/v2": {
+    "manifest.json": "516eeb90ec55021d11d995cac817c865026dd50450b19c9870f9f7f0d4554c57",
+    "model.js": "c340e1688581709749fedb3ac13073598b3f45769046050d2a887df95e37a65c"
+  },
+  "registry.json": {
+    "baseplate": 2,
+    "bin": 1
   }
 }

@@ -1,0 +1,59 @@
+{
+ "reference": "baseplate/v1",
+ "cases": [
+  {
+   "values": {},
+   "volume_mm3": 18880.89,
+   "size_mm": [
+    170.5,
+    128.5,
+    4.65
+   ]
+  },
+  {
+   "values": {
+    "gx": 4,
+    "gy": 3,
+    "pad_x": 0,
+    "pad_y": 0
+   },
+   "volume_mm3": 14768.25,
+   "size_mm": [
+    167.5,
+    125.5,
+    4.65
+   ]
+  },
+  {
+   "values": {
+    "gx": 3,
+    "gy": 2,
+    "floor_t": 5,
+    "magnets": true,
+    "screws": true
+   },
+   "volume_mm3": 62988.82,
+   "size_mm": [
+    128.5,
+    86.5,
+    9.65
+   ]
+  },
+  {
+   "values": {
+    "gx": 1,
+    "gy": 1,
+    "floor_t": 3.5,
+    "magnets": true,
+    "pad_x": 6,
+    "pad_y": 0.5
+   },
+   "volume_mm3": 11189.45,
+   "size_mm": [
+    53.5,
+    42.5,
+    8.15
+   ]
+  }
+ ]
+}
