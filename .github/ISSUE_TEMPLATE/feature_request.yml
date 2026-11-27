@@ -1,0 +1,11 @@
+name: Idea or new part
+description: Suggest a feature, option or a new part for the system
+labels: [enhancement]
+body:
+  - type: textarea
+    id: idea
+    attributes:
+      label: What would you like?
+      description: Describe the part or option and what you'd use it for (home, shop, kitchen, garage…).
+    validations:
+      required: true

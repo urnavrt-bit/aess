@@ -7,6 +7,8 @@ Gridfinity-compatible bins and baseplates, plus a web generator that turns your 
 
 [**Open the generator → aess.billowapp.dev**](https://aess.billowapp.dev)
 
+[![CI](https://github.com/urnavrt-bit/aess/actions/workflows/ci.yml/badge.svg)](https://github.com/urnavrt-bit/aess/actions/workflows/ci.yml) [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+
 <img src="docs/images/generator-bin.png" alt="The AESS generator showing a 2×1 bin with three compartments" width="900">
 
 </div>
@@ -77,7 +79,7 @@ browser ──► server/app.py ──► solidcraft-cli run <script> --in model
 Requirements: Linux or macOS, Python 3.10+, and the [SolidCraft](https://solidcraft.io/download/) CLI (`solidcraft-cli`) on `PATH` or in `AESS_SOLIDCRAFT_CLI`.
 
 ```bash
-git clone <this repo> aess && cd aess
+git clone https://github.com/urnavrt-bit/aess.git && cd aess
 python3 server/app.py --port 8000        # http://localhost:8000
 python3 -m unittest discover -s tests    # tests (SolidCraft not needed)
 ```

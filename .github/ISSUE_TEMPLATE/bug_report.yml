@@ -1,0 +1,22 @@
+name: Bug report
+description: Something doesn't fit, print or work as expected
+labels: [bug]
+body:
+  - type: input
+    id: code
+    attributes:
+      label: Config code
+      description: The code engraved on the part or shown in the generator (e.g. AE-WCFJS-5ZCVN)
+      placeholder: AE-XXXXX-XXXXX
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened?
+      description: What did you expect, and what happened instead? Photos help a lot.
+    validations:
+      required: true
+  - type: textarea
+    id: print
+    attributes:
+      label: Printer & settings
+      description: Printer, material, nozzle, layer height, perimeters (if it's a print/fit issue)
