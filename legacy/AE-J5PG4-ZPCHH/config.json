@@ -1,0 +1,40 @@
+{
+ "aess": 1,
+ "code": "AE-J5PG4-ZPCHH",
+ "created": "2026-11-27T05:07:52+00:00",
+ "generator": "generator 1.0.0, SolidCraft 0.50.0",
+ "model": "bin",
+ "params": {
+  "div_drop": 0.0,
+  "div_t": 1.2,
+  "floor_z": 7.0,
+  "gx": 2,
+  "gy": 2,
+  "gz": 6,
+  "label": false,
+  "label_w": 12.0,
+  "lip": true,
+  "lip_flat": 0.4,
+  "mag_d": 6.5,
+  "mag_h": 2.4,
+  "magnets": false,
+  "ndx": 0,
+  "ndy": 0,
+  "scoop": true,
+  "scoop_r": 15.0,
+  "screw_d": 3.0,
+  "screw_h": 6.0,
+  "screws": false,
+  "wall": 1.6
+ },
+ "stats": {
+  "size_mm": [
+   83.5,
+   83.5,
+   46.0
+  ],
+  "triangles": 44156,
+  "volume_mm3": 67531.2
+ },
+ "version": 1
+}

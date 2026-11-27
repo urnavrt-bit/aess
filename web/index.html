@@ -4,19 +4,19 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>AESS Generator</title>
-  <meta name="description" content="Design tough, stackable, Gridfinity-compatible storage bins and baseplates, then download print-ready STL, 3MF and STEP files.">
+  <meta name="description" content="Design tough, stackable, Gridfinity-compatible storage bins and baseplates, then download print-ready 3MF and STL files. Everything runs in your browser.">
   <meta name="theme-color" content="#f6f6f4" media="(prefers-color-scheme: light)">
   <meta name="theme-color" content="#111214" media="(prefers-color-scheme: dark)">
-  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/app.css">
-  <script type="importmap">{"imports": {"three": "/vendor/three/three.module.js", "three/addons/": "/vendor/three/"}}</script>
+  <link rel="stylesheet" href="app.css">
+  <script type="importmap">{"imports": {"three": "./vendor/three/three.module.js", "three/addons/": "./vendor/three/"}}</script>
 </head>
 <body>
   <header class="topbar">
-    <a class="brand" href="/" aria-label="AESS home">
+    <a class="brand" href="./" aria-label="AESS home">
       <svg class="logo" viewBox="0 0 32 32" aria-hidden="true"><rect x="3" y="3" width="12" height="12" rx="3"/><rect x="17" y="3" width="12" height="12" rx="3" class="l2"/><rect x="3" y="17" width="26" height="12" rx="3" class="l3"/></svg>
       <span class="brand-name">AESS</span>
       <span class="brand-sub">Storage generator</span>
@@ -27,6 +27,8 @@
       <button type="submit" class="btn ghost">Open</button>
     </form>
     <div class="top-actions">
+      <button class="icon-btn" id="fileBtn" title="Open an AESS 3MF or STL file" aria-label="Open file"><svg viewBox="0 0 24 24"><path d="M4 7a2 2 0 0 1 2-2h4l2 2h6a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2z"/></svg></button>
+      <input type="file" id="fileInput" accept=".3mf,.stl" hidden>
       <button class="icon-btn" id="recentBtn" title="Recent designs" aria-label="Recent designs"><svg viewBox="0 0 24 24"><path d="M12 7v5l3 2"/><circle cx="12" cy="12" r="9"/></svg></button>
       <button class="icon-btn" id="themeBtn" title="Toggle dark mode" aria-label="Toggle dark mode"><svg viewBox="0 0 24 24"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg></button>
       <button class="btn ghost" id="helpBtn"><svg viewBox="0 0 24 24" class="i"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.6.3-1 .9-1 1.6v.6"/><circle cx="12" cy="17" r=".6" fill="currentColor"/></svg>Help</button>
@@ -36,27 +38,24 @@
   <main class="layout">
     <aside class="panel" id="panel">
       <div class="panel-scroll">
-        <div class="model-intro" id="modelIntro"></div>
-        <div class="version-note" id="versionNote" hidden></div>
-        <section class="presets" id="presets"></section>
-        <div id="groups"></div>
+        <div id="editor">
+          <div class="model-intro" id="modelIntro"></div>
+          <div class="version-note" id="versionNote" hidden></div>
+          <section class="presets" id="presets"></section>
+          <div class="reset-bar" id="resetBar" hidden><span id="resetMsg"></span><button class="link-btn" type="button" id="resetAll">Reset all</button></div>
+          <div id="groups"></div>
+        </div>
+        <div class="legacy" id="legacyView" hidden></div>
       </div>
       <div class="panel-foot">
         <ul class="issues" id="issues" hidden></ul>
-        <button class="btn primary big" id="generateBtn">
-          <span class="lbl">Generate model</span>
-          <span class="spinner" aria-hidden="true"></span>
-        </button>
-        <div class="result" id="result" hidden></div>
+        <div class="result" id="result"></div>
       </div>
     </aside>
 
     <section class="stage">
       <div id="viewer" class="viewer"></div>
-      <div class="hud top-left" id="dims"></div>
-      <div class="hud top-right">
-        <span class="badge" id="previewBadge">Sketch preview</span>
-      </div>
+      <div class="hud top-left dims" id="dims"></div>
       <div class="hud bottom-right view-tools">
         <button class="icon-btn" data-view="iso" title="3D view">3D</button>
         <button class="icon-btn" data-view="top" title="Top view">Top</button>
@@ -64,7 +63,8 @@
         <button class="icon-btn" data-view="bottom" title="Bottom view">Bot</button>
         <button class="icon-btn" id="stackBtn" title="Show a second bin stacked on top">Stack</button>
       </div>
-      <div class="hud bottom-left hint">Drag to orbit · scroll to zoom · right-drag to pan</div>
+      <div class="hud bottom-left hint">Drag to orbit · scroll to zoom · right-drag to pan · drop an AESS file to open it</div>
+      <div class="drop-overlay"><div>Drop an AESS 3MF or STL to open its design</div></div>
     </section>
   </main>
 
@@ -80,17 +80,18 @@
         <h3 id="h-start">Getting started</h3>
         <ol>
           <li>Pick <b>Bin</b> or <b>Baseplate</b> at the top, or start from a preset.</li>
-          <li>Adjust the settings on the left. The 3D view updates as you go (that's a quick sketch preview).</li>
-          <li>Press <b>Generate model</b>. The exact model is built on the server, usually in 5–30 seconds, and replaces the sketch.</li>
-          <li>Download <b>3MF</b> (best for slicers), <b>STL</b>, or <b>STEP</b> (for editing in CAD).</li>
-          <li>Keep the <b>config code</b>. Typing it in later brings back exactly this design.</li>
+          <li>Adjust the settings on the left. The 3D view shows the exact model and updates instantly; everything is built in your browser.</li>
+          <li>Download <b>3MF</b> (best for slicers) or <b>STL</b>.</li>
+          <li>Keep the <b>config code</b>, or just keep the file: either one brings back exactly this design.</li>
         </ol>
         <h3 id="h-grid">Grid &amp; sizes</h3>
         <p>Everything sits on a <b>42 mm grid</b>. A bin that is 2 × 1 units is 83.5 mm × 41.5 mm (0.5 mm smaller than the grid so it drops in easily). Height is counted in <b>7 mm units</b>: a 3-unit bin is 21 mm to the top of its wall, plus about 4 mm of stacking lip.</p>
         <p>Baseplates hold bins in place. Use <i>Fit to drawer</i> in the baseplate settings to get the largest grid that fits a drawer, with padding to fill the gap.</p>
         <h3 id="h-codes">Config codes</h3>
-        <p>Every generated design gets a code like <code>AE-7K3P0-Q9XDM</code>. A code stores the model, its <b>exact version</b> and every setting, so it rebuilds the identical part even after new versions come out. The code is also <b>engraved on the underside</b> of every part (under the front-left foot of a bin, along the front edge of a baseplate), so you can always read it off a printed part. If a newer version exists, you'll be offered the choice to open your design in it; the original stays available.</p>
-        <p>Share a design with its link (<code>aess.billowapp.dev/c/AE-…</code>) or just send the code. The same settings always give the same code.</p>
+        <p>Every design has a code like <code>AE2-1QG8K-R</code>. The code itself contains the model, its <b>exact version</b> and every setting you changed, so it rebuilds the identical part even after new versions come out, with no account and no server. The code is also <b>engraved on the underside</b> of every part (under the front-left foot of a bin, along the front edge of a baseplate), so you can always read it off a printed part. If a newer version exists, you'll be offered the choice to open your design in it; the original stays available.</p>
+        <p><b>Files remember their design too.</b> A 3MF holds the full configuration (every parameter, the version and the code) plus a preview image; an STL holds the code in its header. Drop either file onto this page, or use the folder button, to open the design and change it.</p>
+        <p>Older codes like <code>AE-WCFJS-5ZCVN</code> (version 1) still open, with their original files.</p>
+        <p>Share a design with its link (<code>aess.billowapp.dev/?c=AE2-…</code>) or just send the code. The same settings always give the same code.</p>
         <h3 id="h-print">Printing tips</h3>
         <ul>
           <li><b>Material:</b> PETG or ASA for toughness and heat resistance (cars, garages, dishwasher-adjacent kitchens). PLA is fine for desks and drawers.</li>
@@ -104,7 +105,7 @@
         <h3 id="h-compat">Gridfinity compatibility</h3>
         <p>AESS uses the open Gridfinity interface (42 mm pitch, 7 mm height units, standard base and lip profile), so AESS bins fit Gridfinity baseplates and the other way round. AESS is an independent project, not affiliated with Gridfinity's creator.</p>
         <h3 id="h-faq">FAQ</h3>
-        <p><b>Why is the preview blocky?</b> While you edit, you see a fast sketch. Generate to see the exact model.</p>
+        <p><b>Is the preview the real thing?</b> Yes. What you see is exactly the model you download, built on your device.</p>
         <p><b>The weight looks high.</b> It assumes a solid part. Your slicer's estimate will be lower because of infill.</p>
         <p><b>Can I stack bins without a baseplate?</b> Yes. The stacking lip holds the bin above it exactly like a baseplate does.</p>
         <p><b>Something doesn't fit?</b> Printer tolerances vary. Try a 1 × 1 bin with a 1 × 1 baseplate first.</p>
@@ -115,7 +116,7 @@
   <!-- Recent -->
   <dialog class="modal small" id="recentDlg">
     <div class="modal-head"><h2>Recent designs</h2><button class="icon-btn" data-close aria-label="Close">✕</button></div>
-    <div class="modal-body"><ul class="recent" id="recentList"></ul><p class="muted small" id="recentEmpty">Designs you generate appear here (stored in this browser only).</p></div>
+    <div class="modal-body"><ul class="recent" id="recentList"></ul><p class="muted small" id="recentEmpty">Designs you download or share appear here (stored in this browser only).</p></div>
   </dialog>
 
   <!-- Drawer fit -->
@@ -133,6 +134,6 @@
   </dialog>
 
   <div class="toasts" id="toasts" aria-live="polite"></div>
-  <script type="module" src="/app.js"></script>
+  <script type="module" src="app.js"></script>
 </body>
 </html>

@@ -1,0 +1,40 @@
+{
+ "aess": 1,
+ "code": "AE-3GPFN-XW6VJ",
+ "created": "2026-11-27T05:07:52+00:00",
+ "generator": "generator 1.0.0, SolidCraft 0.50.0",
+ "model": "bin",
+ "params": {
+  "div_drop": 0.0,
+  "div_t": 1.2,
+  "floor_z": 7.0,
+  "gx": 4,
+  "gy": 2,
+  "gz": 2,
+  "label": false,
+  "label_w": 12.0,
+  "lip": false,
+  "lip_flat": 0.4,
+  "mag_d": 6.5,
+  "mag_h": 2.4,
+  "magnets": false,
+  "ndx": 2,
+  "ndy": 0,
+  "scoop": false,
+  "scoop_r": 10.0,
+  "screw_d": 3.0,
+  "screw_h": 6.0,
+  "screws": false,
+  "wall": 1.6
+ },
+ "stats": {
+  "size_mm": [
+   167.5,
+   83.5,
+   14.0
+  ],
+  "triangles": 40214,
+  "volume_mm3": 93598.2
+ },
+ "version": 1
+}

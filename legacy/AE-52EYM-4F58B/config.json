@@ -1,0 +1,40 @@
+{
+ "aess": 1,
+ "code": "AE-52EYM-4F58B",
+ "created": "2026-11-27T05:06:30+00:00",
+ "generator": "generator 1.0.0, SolidCraft 0.50.0",
+ "model": "bin",
+ "params": {
+  "div_drop": 0.0,
+  "div_t": 1.2,
+  "floor_z": 7.0,
+  "gx": 2,
+  "gy": 1,
+  "gz": 3,
+  "label": true,
+  "label_w": 12.0,
+  "lip": true,
+  "lip_flat": 0.4,
+  "mag_d": 6.5,
+  "mag_h": 2.4,
+  "magnets": false,
+  "ndx": 0,
+  "ndy": 0,
+  "scoop": false,
+  "scoop_r": 10.0,
+  "screw_d": 3.0,
+  "screw_h": 6.0,
+  "screws": false,
+  "wall": 1.6
+ },
+ "stats": {
+  "size_mm": [
+   83.5,
+   41.5,
+   25.0
+  ],
+  "triangles": 32892,
+  "volume_mm3": 35601.9
+ },
+ "version": 1
+}

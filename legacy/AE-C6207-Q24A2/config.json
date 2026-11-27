@@ -1,0 +1,30 @@
+{
+ "aess": 1,
+ "code": "AE-C6207-Q24A2",
+ "created": "2026-11-27T04:54:41+00:00",
+ "generator": "generator 1.0.0, SolidCraft 0.50.0",
+ "model": "baseplate",
+ "params": {
+  "cs_d": 9.0,
+  "floor_t": 0.0,
+  "gx": 4,
+  "gy": 3,
+  "mag_d": 4.0,
+  "mag_h": 2.4,
+  "magnets": false,
+  "pad_x": 0.0,
+  "pad_y": 0.0,
+  "screws": false,
+  "sd": 4.5
+ },
+ "stats": {
+  "size_mm": [
+   167.5,
+   125.5,
+   4.65
+  ],
+  "triangles": 29420,
+  "volume_mm3": 14769.4
+ },
+ "version": 1
+}
