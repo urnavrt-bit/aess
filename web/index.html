@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>AESS Generator</title>
-  <meta name="description" content="Design tough, stackable, Gridfinity-compatible storage bins, baseplates and lids, then download print-ready 3MF and STL files. Everything runs in your browser.">
+  <meta name="description" content="Design tough, stackable, Gridfinity-compatible storage bins, baseplates, lids, crates and drawer cabinets, then download print-ready 3MF and STL files. Everything runs in your browser.">
   <meta name="theme-color" content="#f6f6f4" media="(prefers-color-scheme: light)">
   <meta name="theme-color" content="#111214" media="(prefers-color-scheme: dark)">
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
@@ -78,7 +78,7 @@
       <div class="help-content">
         <h3 id="h-start">Getting started</h3>
         <ol>
-          <li>Pick <b>Bin</b>, <b>Baseplate</b> or <b>Lid</b> at the top, or start from a preset.</li>
+          <li>Pick a part (<b>Bin</b>, <b>Baseplate</b>, <b>Lid</b>, <b>Crate</b>, <b>Cabinet</b> or <b>Drawer</b>) at the top, or start from a preset.</li>
           <li>Adjust the settings on the left. The 3D view shows the exact model and updates instantly; everything is built in your browser.</li>
           <li>Download <b>3MF</b> (best for slicers) or <b>STL</b>.</li>
           <li>Keep the <b>config code</b>, or just keep the file: either one brings back exactly this design.</li>
@@ -87,15 +87,16 @@
         <p>Everything sits on a <b>42 mm grid</b>. A bin that is 2 × 1 units is 83.5 mm × 41.5 mm (0.5 mm smaller than the grid so it drops in easily). Height is counted in <b>7 mm units</b>: a 3-unit bin is 21 mm to the top of its wall, plus about 4 mm of stacking lip.</p>
         <p>Baseplates hold bins in place. Use <i>Fit to drawer</i> in the baseplate settings to get the largest grid that fits a drawer, with padding to fill the gap. The light frame (on by default) lowers the middle of each grid line: bins stand on the drawer floor and the frame only keeps them in place, so it uses about 40% less filament.</p>
         <p>Lids drop into a bin's stacking lip. A stacking lid has baseplate pockets on top, so bins of any size still stack on a lidded bin; a flat lid is lower and easy to wipe. Lift a lid by the finger grip at its front edge.</p>
+        <p>Crates are open-front boxes with a baseplate grid inside: bins lift out of the grid and slide out the front. A cabinet is the same kind of shell with rails for drawers; make its drawers on the <i>Drawer</i> tab with the same width, depth and bin height. Crates and cabinets have Gridfinity feet and a stacking top, so they stack on each other, sit on a baseplate and take bins on top. A drawer stops just before it comes out; lift its back to take it out.</p>
         <h3 id="h-codes">Config codes</h3>
-        <p>Every design has a code like <code>AE2-1QG8K-R</code>. The code itself contains the model, its <b>exact version</b> and every setting you changed, so it rebuilds the identical part even after new versions come out, with no account and no server. The code is also <b>engraved on the underside</b> of every part (under the front-left foot of a bin, along the front edge of a baseplate, under the front-left of a lid), so you can always read it off a printed part. If a newer version exists, you'll be offered the choice to open your design in it; the original stays available.</p>
+        <p>Every design has a code like <code>AE2-1QG8K-R</code>. The code itself contains the model, its <b>exact version</b> and every setting you changed, so it rebuilds the identical part even after new versions come out, with no account and no server. The code is also <b>engraved on the underside</b> of every part (under the front-left foot of a bin, along the front edge of a baseplate, under the front-left of a lid, under the front-left foot of a crate or cabinet, under a drawer's floor), so you can always read it off a printed part. If a newer version exists, you'll be offered the choice to open your design in it; the original stays available.</p>
         <p><b>Files remember their design too.</b> A 3MF holds the full configuration (every parameter, the version and the code) plus a preview image; an STL holds the code in its header. Drop either file onto this page, or use the folder button, to open the design and change it.</p>
         <p>Share a design with its link (<code>aess.billowapp.dev/?c=AE2-…</code>) or just send the code. The same settings always give the same code.</p>
         <h3 id="h-print">Printing tips</h3>
         <ul>
           <li><b>Material:</b> PETG or ASA for toughness and heat resistance (cars, garages, dishwasher-adjacent kitchens). PLA is fine for desks and drawers.</li>
           <li><b>Settings:</b> 0.2 mm layers, 3–4 perimeters, 15% gyroid infill. No supports needed; every overhang is 45° or less.</li>
-          <li><b>Orientation:</b> print bins, baseplates and lids as exported, flat side down. A lid prints plug-down, with no supports.</li>
+          <li><b>Orientation:</b> print bins, baseplates and lids as exported, flat side down. A lid prints plug-down, with no supports. Crates and cabinets download standing up: turn them onto their <b>back</b> in the slicer (open front facing up) and they print with no supports. Drawers print upright.</li>
           <li><b>Magnets:</b> 6 × 2 mm neodymium discs. Put a drop of CA glue in each hole, and keep polarity consistent between bins and plates.</li>
           <li><b>Large baseplates:</b> if a plate is bigger than your bed, print several smaller plates and turn on <b>Join</b> for the edges where they meet. Joined edges all have the same sockets, and a small bow-tie key (printed loose inside the plate's front-left square) drops into the sockets of both plates, so any joined edge fits any other and the grid stays exact across the seam. Join every edge if you want plates you can put anywhere. If keys are too tight or loose, change <i>Joint clearance</i>.</li>
         </ul>

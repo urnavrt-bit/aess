@@ -44,6 +44,21 @@
     "manifest.json": "516eeb90ec55021d11d995cac817c865026dd50450b19c9870f9f7f0d4554c57",
     "model.js": "c340e1688581709749fedb3ac13073598b3f45769046050d2a887df95e37a65c"
   },
+  "cabinet/v1": {
+    "manifest.json": "1ec571d35445f4604202059bacf5754b6027a38cb0024709680767da9a6c964d",
+    "model.js": "624e92eb299d350118037eb6dca42617ea0e19890466e8d15d01aba9e018172f",
+    "model.sc": "46bfde131aaa33ea7f7e51744c744b04a56121fe8bead391cdc9b1ae354d6678"
+  },
+  "crate/v1": {
+    "manifest.json": "73dc6ed11fa3756a21b00bf244d4de4ade7594aa7e9397b420d0fc3d626a57fb",
+    "model.js": "d333e70fae48eefe1597e7edb1290fb2ee917ba30b53a647d52d48ecaad082bf",
+    "model.sc": "589196ddeeb7a638eda33410c549885592dec5c460bdd202aed8b23eb1796e45"
+  },
+  "drawer/v1": {
+    "manifest.json": "b852f1285ff4cb2ba8b07c1b5f221202483546aa16b38b858191eb399a9b51b4",
+    "model.js": "c1954dc5269be27b1fb9f3e8084a5c0d269e6221d9baba3ef1759afea5a60666",
+    "model.sc": "eff5c94540b68a81aeea235eae167167cb043391d65e65c4661456a977424859"
+  },
   "lid/v1": {
     "manifest.json": "99c83f1a61eb952b0c6dd65c72f4956d2aceb2ced8471f0d92b4c55d53025d9e",
     "model.js": "0f425bfbd41b158fa4f7966112e1f1760383197e94be12b9f4e665a1f9199586",
@@ -52,6 +67,9 @@
   "registry.json": {
     "baseplate": 2,
     "bin": 1,
+    "cabinet": 5,
+    "crate": 4,
+    "drawer": 6,
     "lid": 3
   }
 }

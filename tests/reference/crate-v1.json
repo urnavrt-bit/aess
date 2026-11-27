@@ -1,0 +1,74 @@
+{
+ "reference": "crate/v1",
+ "cases": [
+  {
+   "values": {},
+   "volume_mm3": 86882.42,
+   "size_mm": [
+    88.0,
+    88.0,
+    64.2
+   ]
+  },
+  {
+   "values": {
+    "gx": 1,
+    "gy": 1,
+    "gz": 2,
+    "headroom": 5
+   },
+   "volume_mm3": 22452.39,
+   "size_mm": [
+    46.0,
+    46.0,
+    35.2
+   ]
+  },
+  {
+   "values": {
+    "gx": 3,
+    "gy": 2,
+    "gz": 4,
+    "back": false,
+    "wall": 1.6
+   },
+   "volume_mm3": 102617.36,
+   "size_mm": [
+    129.2,
+    87.2,
+    50.2
+   ]
+  },
+  {
+   "values": {
+    "gx": 2,
+    "gy": 3,
+    "feet": false,
+    "stack": false,
+    "floor_t": 2,
+    "top_t": 2.5
+   },
+   "volume_mm3": 95361.21,
+   "size_mm": [
+    88.0,
+    130.0,
+    56.9
+   ]
+  },
+  {
+   "values": {
+    "gx": 4,
+    "gy": 1,
+    "gz": 9,
+    "headroom": 12,
+    "wall": 3
+   },
+   "volume_mm3": 128020.16,
+   "size_mm": [
+    174.0,
+    48.0,
+    91.2
+   ]
+  }
+ ]
+}

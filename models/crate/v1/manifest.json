@@ -1,0 +1,179 @@
+{
+  "model": "crate",
+  "version": 1,
+  "title": "Crate",
+  "summary": "An open-front box for bins, with a baseplate grid inside. Crates stack on each other and on baseplates, and take bins on top, so they make cubbies on a shelf, bench or countertop.",
+  "released": "2026-11-27",
+  "engine": "browser",
+  "runtime": {
+    "manifold": "_engine/manifold-3.5.5/manifold.js",
+    "opentype": "_lib/opentype-1.3.4/opentype.module.js",
+    "font": "_fonts/atkinson-hyperlegible-bold/font.ttf",
+    "kit": "_kit/k1/kit.js",
+    "codec": "_codec/c1/codec.js",
+    "entry": "model.js"
+  },
+  "reference": {
+    "solidcraft": "crate/v1"
+  },
+  "formats": [
+    "3mf",
+    "stl"
+  ],
+  "groups": [
+    {
+      "id": "size",
+      "title": "Size",
+      "help": "The grid inside, in 42 mm squares, and the height of the bins it holds in 7 mm units. The crate is that grid plus its walls."
+    },
+    {
+      "id": "body",
+      "title": "Walls & floor",
+      "help": "Thicker walls and plates make a stiffer crate; thinner ones print faster and lighter."
+    },
+    {
+      "id": "stack",
+      "title": "Stacking",
+      "help": "Feet underneath and pockets on top use the Gridfinity grid, so crates stack on each other, sit on a baseplate, and bins sit on top."
+    }
+  ],
+  "params": [
+    {
+      "id": "gx",
+      "group": "size",
+      "label": "Width",
+      "type": "int",
+      "unit": "units",
+      "min": 1,
+      "max": 6,
+      "step": 1,
+      "default": 2,
+      "help": "Grid squares inside, across the front."
+    },
+    {
+      "id": "gy",
+      "group": "size",
+      "label": "Depth",
+      "type": "int",
+      "unit": "units",
+      "min": 1,
+      "max": 6,
+      "step": 1,
+      "default": 2,
+      "help": "Grid squares inside, front to back."
+    },
+    {
+      "id": "gz",
+      "group": "size",
+      "label": "Bin height",
+      "type": "int",
+      "unit": "units",
+      "min": 2,
+      "max": 15,
+      "step": 1,
+      "default": 6,
+      "help": "Height of the tallest bins it should hold, in 7 mm units (the same number as the bin's height)."
+    },
+    {
+      "id": "headroom",
+      "group": "size",
+      "label": "Headroom",
+      "type": "float",
+      "unit": "mm",
+      "min": 5,
+      "max": 40,
+      "step": 0.5,
+      "default": 6,
+      "help": "Space above the bins' stacking lip. At least 5 mm lets a bin lift out of the grid and slide out the front."
+    },
+    {
+      "id": "wall",
+      "group": "body",
+      "label": "Wall thickness",
+      "type": "float",
+      "unit": "mm",
+      "min": 1.2,
+      "max": 4,
+      "step": 0.05,
+      "default": 2,
+      "help": "Side and back walls."
+    },
+    {
+      "id": "floor_t",
+      "group": "body",
+      "label": "Floor thickness",
+      "type": "float",
+      "unit": "mm",
+      "min": 0.6,
+      "max": 4,
+      "step": 0.05,
+      "default": 1.2,
+      "help": "Solid floor under the grid inside."
+    },
+    {
+      "id": "top_t",
+      "group": "body",
+      "label": "Top thickness",
+      "type": "float",
+      "unit": "mm",
+      "min": 0.6,
+      "max": 4,
+      "step": 0.05,
+      "default": 1.2,
+      "help": "Solid top above the opening (under the stacking pockets)."
+    },
+    {
+      "id": "back",
+      "group": "body",
+      "label": "Solid back",
+      "type": "bool",
+      "default": true,
+      "help": "Turn off for an open back with an 8 mm frame: lighter, and you can reach through."
+    },
+    {
+      "id": "feet",
+      "group": "stack",
+      "label": "Feet",
+      "type": "bool",
+      "default": true,
+      "help": "Gridfinity feet under every square, so the crate locks onto a baseplate or another crate. Turn off for a flat bottom."
+    },
+    {
+      "id": "stack",
+      "group": "stack",
+      "label": "Stacking top",
+      "type": "bool",
+      "default": true,
+      "help": "Baseplate pockets on top, so crates and bins stack on it. Turn off for a flat top."
+    }
+  ],
+  "checks": [],
+  "presets": [
+    {
+      "name": "Cubby",
+      "help": "Stacking 2 x 2 cubby for 6-unit bins",
+      "values": {
+        "gx": 2,
+        "gy": 2,
+        "gz": 6
+      }
+    },
+    {
+      "name": "Low shelf",
+      "help": "Wide and shallow, for 3-unit bins",
+      "values": {
+        "gx": 4,
+        "gy": 2,
+        "gz": 3
+      }
+    },
+    {
+      "name": "Light",
+      "help": "Open back and thin walls",
+      "values": {
+        "wall": 1.6,
+        "back": false
+      }
+    }
+  ]
+}

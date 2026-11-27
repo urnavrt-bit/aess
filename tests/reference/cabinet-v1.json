@@ -1,0 +1,73 @@
+{
+ "reference": "cabinet/v1",
+ "cases": [
+  {
+   "values": {},
+   "volume_mm3": 120464.69,
+   "size_mm": [
+    93.0,
+    91.5,
+    116.8
+   ]
+  },
+  {
+   "values": {
+    "gx": 1,
+    "gy": 1,
+    "gz": 2,
+    "drawers": 5
+   },
+   "volume_mm3": 61212.3,
+   "size_mm": [
+    51.0,
+    49.5,
+    151.8
+   ]
+  },
+  {
+   "values": {
+    "gx": 3,
+    "gy": 2,
+    "gz": 4,
+    "drawers": 2,
+    "back": false
+   },
+   "volume_mm3": 126086.25,
+   "size_mm": [
+    135.0,
+    91.5,
+    95.8
+   ]
+  },
+  {
+   "values": {
+    "gx": 2,
+    "gy": 3,
+    "feet": false,
+    "stack": false,
+    "wall": 3,
+    "floor_t": 2
+   },
+   "volume_mm3": 159462.91,
+   "size_mm": [
+    95.0,
+    134.5,
+    108.2
+   ]
+  },
+  {
+   "values": {
+    "gx": 4,
+    "gy": 3,
+    "gz": 3,
+    "drawers": 3
+   },
+   "volume_mm3": 264236.1,
+   "size_mm": [
+    177.0,
+    133.5,
+    116.8
+   ]
+  }
+ ]
+}

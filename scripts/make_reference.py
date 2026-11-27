@@ -58,6 +58,11 @@ def _bp4_rules(v):
     return on
 
 
+_feet = ["Foot1", "Foot2", "Foot3", "FootGrid"]
+_top = ["TopChamferTop", "TopVertical", "TopChamferLow", "TopGrid"]
+_open_back = lambda v: {"BackWindow": not v["back"]}
+
+
 REFERENCES = {
     "bin/v1": {"features": _bin, "engraved": True, "cases": [
         {}, {"gx": 1, "gy": 1, "gz": 3},
@@ -97,6 +102,29 @@ REFERENCES = {
         {"gx": 4, "gy": 2, "join_l": True, "join_f": True, "floor_t": 3, "magnets": True, "pad_x": 0, "keys": False},
         {"gx": 1, "gy": 3, "join_l": True, "join_r": True, "pad_y": 0},
         {"gx": 5, "gy": 5, "join_l": True, "join_r": True, "join_f": True, "join_b": True},
+    ]},
+    "crate/v1": {"features": {
+        "feet": {"on": {"has_feet": "1"}, "off": {"has_feet": "0"}, "suppress_off": _feet},
+        "stack": {"on": {"has_stack": "1"}, "off": {"has_stack": "0"}, "suppress_off": _top},
+    }, "rules": _open_back, "engraved": False, "cases": [
+        {}, {"gx": 1, "gy": 1, "gz": 2, "headroom": 5},
+        {"gx": 3, "gy": 2, "gz": 4, "back": False, "wall": 1.6},
+        {"gx": 2, "gy": 3, "feet": False, "stack": False, "floor_t": 2, "top_t": 2.5},
+        {"gx": 4, "gy": 1, "gz": 9, "headroom": 12, "wall": 3},
+    ]},
+    "cabinet/v1": {"features": {
+        "feet": {"on": {"has_feet": "1"}, "off": {"has_feet": "0"}, "suppress_off": _feet},
+        "stack": {"on": {"has_stack": "1"}, "off": {"has_stack": "0"}, "suppress_off": _top},
+    }, "rules": _open_back, "engraved": False, "cases": [
+        {}, {"gx": 1, "gy": 1, "gz": 2, "drawers": 5},
+        {"gx": 3, "gy": 2, "gz": 4, "drawers": 2, "back": False},
+        {"gx": 2, "gy": 3, "feet": False, "stack": False, "wall": 3, "floor_t": 2},
+        {"gx": 4, "gy": 3, "gz": 3, "drawers": 3},
+    ]},
+    "drawer/v1": {"features": {"pull": {"suppress_off": ["Pull"]}}, "engraved": False, "cases": [
+        {}, {"gx": 1, "gy": 1, "gz": 2, "pull_w": 20},
+        {"gx": 4, "gy": 3, "gz": 5, "pull": False},
+        {"gx": 3, "gy": 2, "floor_t": 2.5, "pull_w": 126},
     ]},
     "lid/v1": {"features": {
         "stack": {"on": {"has_stack": "1"}, "off": {"has_stack": "0"},

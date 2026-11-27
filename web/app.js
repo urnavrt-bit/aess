@@ -155,7 +155,7 @@ function renderPanel() {
 
   const groups = $("#groups");
   groups.innerHTML = "";
-  const openGroups = LS.get("openGroups", ["size", "strength", "inside", "edge", "floor", "top", "grip"]);
+  const openGroups = LS.get("openGroups", ["size", "strength", "inside", "edge", "floor", "top", "grip", "body", "stack", "front"]);
   for (const g of m.groups) {
     const det = el("details", { class: "group", "data-group": g.id, open: openGroups.includes(g.id) });
     det.addEventListener("toggle", () => {
@@ -403,7 +403,7 @@ async function copy(text, msg) {
 }
 
 function designName(m, v) {
-  return m.model === "bin" ? `bin-${v.gx}x${v.gy}x${v.gz}` : `${m.model}-${v.gx}x${v.gy}`;
+  return m.model === "bin" || m.model === "crate" ? `${m.model}-${v.gx}x${v.gy}x${v.gz}` : m.model === "cabinet" ? `cabinet-${v.drawers}x-${v.gx}x${v.gy}x${v.gz}` : m.model === "drawer" ? `drawer-${v.gx}x${v.gy}x${v.gz}` : `${m.model}-${v.gx}x${v.gy}`;
 }
 
 async function download(kind) {
@@ -435,7 +435,7 @@ async function download(kind) {
 function remember(code) {
   if (!code || !S.manifest) return;
   const v = S.values;
-  const desc = S.manifest.model === "bin" ? `Bin ${v.gx}×${v.gy}×${v.gz}` : `${S.manifest.title} ${v.gx}×${v.gy}`;
+  const desc = S.manifest.model === "bin" || S.manifest.model === "crate" ? `${S.manifest.title} ${v.gx}×${v.gy}×${v.gz}` : S.manifest.model === "cabinet" ? `Cabinet, ${v.drawers} drawers ${v.gx}×${v.gy}×${v.gz}` : S.manifest.model === "drawer" ? `Drawer ${v.gx}×${v.gy}×${v.gz}` : `${S.manifest.title} ${v.gx}×${v.gy}`;
   const list = LS.get("recent", []).filter((r) => r.code !== code);
   list.unshift({ code, desc: `${desc} · v${S.manifest.version}`, t: Date.now() });
   LS.set("recent", list.slice(0, 40));
@@ -496,6 +496,23 @@ function updateDims() {
       <div class="sub">Inside <b>${fmt(iw)} × ${fmt(id)}</b>, <b>${fmt(depth)}</b> deep</div>
       ${comp > 1 ? `<div class="sub"><b>${comp}</b> compartments of <b>${fmt(cw)} × ${fmt(cd)}</b> mm</div>` : ""}
       <div class="sub">${v.lip ? "Stackable" : "Flat top, no stacking"} · fits ${v.gx}×${v.gy} grid</div>`;
+  } else if (S.manifest.model === "crate") {
+    const W = 42 * v.gx + 2 * v.wall, D = 42 * v.gy + 2 * v.wall, zb = v.feet ? 4.75 : 0;
+    const open = 7 * v.gz + 4.4 + v.headroom, Ht = zb + v.floor_t + open + v.top_t + (v.stack ? 4.65 : 0);
+    box.innerHTML = `<div class="big">${fmt(W)} × ${fmt(D)} × ${fmt(Ht, 2)} mm</div>
+      <div class="sub">Holds <b>${v.gx}×${v.gy}</b> bins up to <b>${v.gz}</b> units tall</div>
+      <div class="sub">${v.feet ? "Feet" : "Flat bottom"} · ${v.stack ? "stacking top" : "flat top"} · prints on its back</div>`;
+  } else if (S.manifest.model === "cabinet") {
+    const slotW = 42 * v.gx + 5, W = slotW + 2 * v.wall, D = 42 * v.gy + 5.5 + v.wall;
+    const pitch = 2 + 7 * v.gz + 11 + 1, Ht = (v.feet ? 4.75 : 0) + v.floor_t + v.drawers * pitch + v.top_t + (v.stack ? 4.65 : 0);
+    box.innerHTML = `<div class="big">${fmt(W)} × ${fmt(D)} × ${fmt(Ht, 2)} mm</div>
+      <div class="sub"><b>${v.drawers}</b> drawers, each holding <b>${v.gx}×${v.gy}</b> bins up to <b>${v.gz}</b> units tall</div>
+      <div class="sub">${v.feet ? "Feet" : "Flat bottom"} · ${v.stack ? "stacking top" : "flat top"} · prints on its back</div>`;
+  } else if (S.manifest.model === "drawer") {
+    const W = 42 * v.gx + 4, D = 42 * v.gy + 5, H = 7 * v.gz + 11;
+    box.innerHTML = `<div class="big">${fmt(W)} × ${fmt(D)} × ${fmt(H)} mm</div>
+      <div class="sub">Holds <b>${v.gx}×${v.gy}</b> bins up to <b>${v.gz}</b> units tall</div>
+      <div class="sub">Fits a cabinet with drawers of <b>${v.gx}×${v.gy}</b>, bin height <b>${v.gz}</b>${v.pull ? " · pull " + fmt(v.pull_w) + " mm" : ""}</div>`;
   } else if (S.manifest.model === "lid") {
     const W = 42 * v.gx - 0.5, D = 42 * v.gy - 0.5, Ht = 4.75 + v.top_t + (v.stack ? 4.65 : 0);
     box.innerHTML = `<div class="big">${fmt(W)} × ${fmt(D)} × ${fmt(Ht, 2)} mm</div>

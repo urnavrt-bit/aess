@@ -1,0 +1,142 @@
+{
+  "model": "drawer",
+  "version": 1,
+  "title": "Drawer",
+  "summary": "A drawer for the cabinet, with a baseplate grid inside for bins. Make it with the same width, depth and bin height as the cabinet.",
+  "released": "2026-11-27",
+  "engine": "browser",
+  "runtime": {
+    "manifold": "_engine/manifold-3.5.5/manifold.js",
+    "opentype": "_lib/opentype-1.3.4/opentype.module.js",
+    "font": "_fonts/atkinson-hyperlegible-bold/font.ttf",
+    "kit": "_kit/k1/kit.js",
+    "codec": "_codec/c1/codec.js",
+    "entry": "model.js"
+  },
+  "reference": {
+    "solidcraft": "drawer/v1"
+  },
+  "formats": [
+    "3mf",
+    "stl"
+  ],
+  "groups": [
+    {
+      "id": "size",
+      "title": "Size",
+      "help": "Use the same drawer width, depth and bin height as your cabinet: the drawer is sized from them to fit its rails."
+    },
+    {
+      "id": "front",
+      "title": "Front",
+      "help": "The pull is a lip along the top of the front, with a 45° underside so it prints without supports."
+    },
+    {
+      "id": "body",
+      "title": "Floor",
+      "help": "Solid floor under the grid inside."
+    }
+  ],
+  "params": [
+    {
+      "id": "gx",
+      "group": "size",
+      "label": "Width",
+      "type": "int",
+      "unit": "units",
+      "min": 1,
+      "max": 6,
+      "step": 1,
+      "default": 2,
+      "help": "Grid squares inside, across the front. Same as the cabinet's drawer width."
+    },
+    {
+      "id": "gy",
+      "group": "size",
+      "label": "Depth",
+      "type": "int",
+      "unit": "units",
+      "min": 1,
+      "max": 6,
+      "step": 1,
+      "default": 2,
+      "help": "Grid squares inside, front to back. Same as the cabinet's drawer depth."
+    },
+    {
+      "id": "gz",
+      "group": "size",
+      "label": "Bin height",
+      "type": "int",
+      "unit": "units",
+      "min": 2,
+      "max": 12,
+      "step": 1,
+      "default": 3,
+      "help": "Height of the bins it holds, in 7 mm units. Same as the cabinet's bin height."
+    },
+    {
+      "id": "pull",
+      "group": "front",
+      "label": "Pull",
+      "type": "bool",
+      "default": true,
+      "help": "A finger lip along the top of the front."
+    },
+    {
+      "id": "pull_w",
+      "group": "front",
+      "label": "Pull width",
+      "type": "float",
+      "unit": "mm",
+      "min": 15,
+      "max": 200,
+      "step": 0.5,
+      "default": 40,
+      "requires": "pull",
+      "help": "Width of the pull, centred on the front."
+    },
+    {
+      "id": "floor_t",
+      "group": "body",
+      "label": "Floor thickness",
+      "type": "float",
+      "unit": "mm",
+      "min": 0.8,
+      "max": 3,
+      "step": 0.05,
+      "default": 1.2,
+      "help": "Solid floor under the grid inside."
+    }
+  ],
+  "checks": [
+    {
+      "expr": "not pull or pull_w <= gx*42 + 4",
+      "message": "The pull is wider than the drawer front: make it narrower."
+    }
+  ],
+  "presets": [
+    {
+      "name": "Standard",
+      "help": "Matches the cabinet's default drawers",
+      "values": {
+        "gx": 2,
+        "gy": 2,
+        "gz": 3
+      }
+    },
+    {
+      "name": "Wide pull",
+      "help": "Full-width finger lip",
+      "values": {
+        "pull_w": 80
+      }
+    },
+    {
+      "name": "Shallow",
+      "help": "For 2-unit bins (parts tower)",
+      "values": {
+        "gz": 2
+      }
+    }
+  ]
+}

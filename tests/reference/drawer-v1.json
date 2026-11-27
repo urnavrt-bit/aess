@@ -1,0 +1,56 @@
+{
+ "reference": "drawer/v1",
+ "cases": [
+  {
+   "values": {},
+   "volume_mm3": 40946.1,
+   "size_mm": [
+    88.0,
+    99.0,
+    32.0
+   ]
+  },
+  {
+   "values": {
+    "gx": 1,
+    "gy": 1,
+    "gz": 2,
+    "pull_w": 20
+   },
+   "volume_mm3": 14590.18,
+   "size_mm": [
+    46.0,
+    57.0,
+    25.0
+   ]
+  },
+  {
+   "values": {
+    "gx": 4,
+    "gy": 3,
+    "gz": 5,
+    "pull": false
+   },
+   "volume_mm3": 103137.39,
+   "size_mm": [
+    172.0,
+    131.0,
+    46.0
+   ]
+  },
+  {
+   "values": {
+    "gx": 3,
+    "gy": 2,
+    "floor_t": 2.5,
+    "pull_w": 126
+   },
+   "volume_mm3": 74231.83,
+   "size_mm": [
+    130.0,
+    99.0,
+    32.0
+   ]
+  }
+ ]
+}
