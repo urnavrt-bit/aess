@@ -5,9 +5,9 @@ import { STLLoader } from "three/addons/STLLoader.js";
 // ---------------------------------------------------------------- state
 const $ = (s, el = document) => el.querySelector(s);
 const el = (tag, attrs = {}, ...kids) => {
-  const n = document.createElement(tag);
+  const n = tag === "svg" ? document.createElementNS("http://www.w3.org/2000/svg", "svg") : document.createElement(tag);
   for (const [k, v] of Object.entries(attrs)) {
-    if (k === "class") n.className = v;
+    if (k === "class") n.setAttribute("class", v);
     else if (k === "html") n.innerHTML = v;
     else if (k.startsWith("on")) n.addEventListener(k.slice(2), v);
     else if (v === true) n.setAttribute(k, "");
@@ -21,6 +21,8 @@ const S = {
   models: {},        // name -> { versions: {v: manifest}, latest }
   manifest: null,    // manifest being edited
   values: {},        // current values
+  baseline: {},      // what "reset" goes back to: the defaults, or the values of the opened code
+  baselineLabel: "the defaults",
   code: null,        // code of the generated design matching `values` (null when edited since)
   loadedCode: null,  // code opened from the URL or the code box
   poll: null,
@@ -95,6 +97,8 @@ function selectModel(name, version = null, values = null) {
   const saved = LS.get(`draft.${name}.v${v}`, null);
   S.values = {};
   for (const p of S.manifest.params) S.values[p.id] = p.default;
+  S.baseline = { ...S.values, ...(values || {}) };
+  S.baselineLabel = values ? "the original design" : "the defaults";
   Object.assign(S.values, values || saved || {});
   S.code = null;
   clearInterval(S.poll);
@@ -130,6 +134,9 @@ function renderPanel() {
   for (const p of m.presets || []) {
     pre.append(el("button", { class: "chip", title: p.help, onclick: () => applyPreset(p) }, p.name));
   }
+  pre.after($("#resetBar") || el("div", { class: "reset-bar", id: "resetBar", hidden: true },
+    el("span", { class: "reset-msg" }),
+    el("button", { class: "link-btn", type: "button", onclick: resetAll }, "Reset all")));
 
   const groups = $("#groups");
   groups.innerHTML = "";
@@ -142,7 +149,7 @@ function renderPanel() {
       det.open ? cur.add(g.id) : cur.delete(g.id);
       LS.set("openGroups", [...cur]);
     });
-    det.append(el("summary", {}, g.title,
+    det.append(el("summary", {}, g.title, el("span", { class: "changed-count" }),
       el("svg", { class: "chev", viewBox: "0 0 24 24", html: '<path d="M6 9l6 6 6-6"/>' })));
     det.append(el("div", { class: "group-help" }, g.help));
     const body = el("div", { class: "group-body" });
@@ -174,6 +181,58 @@ function infoBtn(text) {
   return b;
 }
 
+const RESET_ICON = '<path d="M3 12a9 9 0 1 0 3-6.7"/><path d="M3 4v5h5"/>';
+function resetBtn(p) {
+  return el("button", {
+    class: "reset", type: "button", tabindex: "-1",
+    onclick: () => { S.values[p.id] = S.baseline[p.id]; syncControls(); onChange(); },
+  }, el("svg", { viewBox: "0 0 24 24", html: RESET_ICON }));
+}
+
+function fmtValue(p, v) {
+  if (p.type === "bool") return v ? "on" : "off";
+  const unit = p.unit === "units" ? " u" : p.unit ? ` ${p.unit}` : "";
+  return `${v}${unit}`;
+}
+
+const isChanged = (p) => p.type === "bool"
+  ? !!S.values[p.id] !== !!S.baseline[p.id]
+  : Math.abs(S.values[p.id] - S.baseline[p.id]) > 1e-9;
+
+function updateChanged() {
+  const origin = S.baselineLabel;
+  const counts = {};
+  let total = 0;
+  for (const p of S.manifest.params) {
+    const wrap = document.querySelector(`[data-param="${p.id}"]`);
+    if (!wrap) continue;
+    const changed = isChanged(p);
+    wrap.classList.toggle("changed", changed);
+    const btn = $(".reset", wrap);
+    btn.title = `Reset to ${origin}: ${fmtValue(p, S.baseline[p.id])}`;
+    btn.setAttribute("aria-label", `Reset ${p.label} to ${fmtValue(p, S.baseline[p.id])}`);
+    btn.tabIndex = changed ? 0 : -1;
+    if (changed) { counts[p.group] = (counts[p.group] || 0) + 1; total++; }
+  }
+  document.querySelectorAll(".group").forEach((g) => {
+    const n = counts[g.dataset.group] || 0;
+    $(".changed-count", g).textContent = n ? `${n} changed` : "";
+  });
+  const bar = $("#resetBar");
+  if (bar) {
+    bar.hidden = total === 0;
+    $(".reset-msg", bar).textContent =
+      `${total} ${total === 1 ? "value differs" : "values differ"} from ${S.baselineLabel}`;
+  }
+}
+
+function resetAll() {
+  S.values = { ...S.baseline };
+  syncControls();
+  onChange();
+  toast(`Back to ${S.baselineLabel}`);
+}
+
 function renderParam(p) {
   const id = "p_" + p.id;
   if (p.type === "bool") {
@@ -181,7 +240,7 @@ function renderParam(p) {
     input.addEventListener("change", () => setValue(p.id, input.checked));
     return el("div", { class: "param", "data-param": p.id },
       el("div", { class: "switch-row" },
-        el("label", { class: "name", for: id }, p.label), infoBtn(p.help),
+        el("label", { class: "name", for: id }, p.label), infoBtn(p.help), resetBtn(p),
         el("span", { class: "switch" }, input, el("span"))));
   }
   const range = el("input", { type: "range", min: p.min, max: p.max, step: p.step, value: S.values[p.id], "aria-label": p.label });
@@ -201,7 +260,7 @@ function renderParam(p) {
   });
   const unit = p.unit === "units" ? "u" : p.unit;
   return el("div", { class: "param", "data-param": p.id },
-    el("div", { class: "param-head" }, el("label", { for: id }, p.label), infoBtn(p.help)),
+    el("div", { class: "param-head" }, el("label", { for: id }, p.label), infoBtn(p.help), resetBtn(p)),
     el("div", { class: "param-ctl" }, range, el("div", { class: "num-wrap" }, num, unit ? el("span", { class: "unit" }, unit) : null)));
 }
 
@@ -252,6 +311,7 @@ function onChange(initial = false) {
     const wrap = document.querySelector(`[data-param="${p.id}"]`);
     if (wrap) wrap.classList.toggle("disabled", !!p.requires && !S.values[p.requires]);
   }
+  updateChanged();
   const { issues, bad } = validate();
   document.querySelectorAll(".param").forEach((w) => w.classList.toggle("invalid", bad.has(w.dataset.param)));
   const list = $("#issues");
@@ -450,11 +510,13 @@ async function openCode(raw) {
     if (!info?.versions[cfg.version]) throw new Error("This design's model version isn't available on this server.");
     S.manifest = info.versions[cfg.version];
     S.values = { ...cfg.params };
+    S.baseline = { ...cfg.params };
+    S.baselineLabel = cfg.code;
+    S.loadedCode = cfg.code;
     renderTabs();
     renderPanel();
     onChange(true);
     S.code = cfg.code;
-    S.loadedCode = cfg.code;
     setUrl(cfg.code);
     $("#codeInput").value = "";
     remember(cfg);
