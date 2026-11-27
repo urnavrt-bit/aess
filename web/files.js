@@ -164,7 +164,7 @@ export async function readDesignFile(file) {
     throw new Error("This 3MF wasn't made by AESS (no design data inside).");
   }
   const header = readSTLHeader(bytes);
-  const m = header.match(/\b(AE2?-[0-9A-Z-]+)/);
+  const m = header.match(/\b(AE2-[0-9A-Z-]+)/);
   if (m) return { code: m[1].replace(/-+$/, "") };
   throw new Error("No AESS design data found in this file.");
 }

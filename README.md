@@ -62,7 +62,6 @@ PETG or ASA for toughness (PLA is fine indoors) · 0.2 mm layers · 3–4 perime
 - **[SolidCraft](https://solidcraft.io) is the design and reference tool.** Each browser model names a SolidCraft reference model; `scripts/make_reference.py` builds a spread of designs with it, and CI checks the browser model against them. They agree to within 0.01% in volume and exactly in size.
 - **Config codes** pack the model id, version and every changed value (plus a checksum against typos) into a short base32 string. No database: the code is the design.
 - **Nothing published ever changes.** Each model version pins the exact engine, font, geometry kit and code format it was built with, and `models/LOCK.json` locks all of them; CI fails if a locked file changes. Improvements go into new versions, and old codes keep building their original part. The site may offer to open a design in a newer version, but only when you choose to.
-- **Version 1 designs** were made with the earlier SolidCraft server. Their codes (`AE-XXXXX-XXXXX`) still open, with their original STL, 3MF and STEP files kept in `legacy/`.
 
 ## Running it yourself
 
@@ -82,11 +81,10 @@ Pushing to `main` runs the tests and deploys to GitHub Pages (`.github/workflows
 
 ```
 web/                    the generator (app, build worker, file reader/writer, three.js)
-models/<model>/v<N>/    manifest.json + model.js (browser) or model.sc (SolidCraft reference / v1)
+models/<model>/v<N>/    manifest.json + model.js (browser) or model.sc (SolidCraft reference)
 models/_engine|_lib|_fonts|_kit|_codec/   frozen dependencies, one folder per version
 models/registry.json    model ids used in codes (append-only) · models/LOCK.json checksums
-legacy/<code>/          version 1 designs: config + original files
-scripts/                build_site, lock_models, make_reference, export_legacy
+scripts/                build_site, serve, lock_models, make_reference
 tests/                  lock tests · tests/js model, code and file tests · tests/reference SolidCraft numbers
 docs/images/            screenshots
 ```

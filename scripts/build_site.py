@@ -6,8 +6,7 @@
 web/            -> the app
 models/         -> manifests, browser model code and its frozen runtime (no SolidCraft files)
 models/index.json  (generated) every manifest + the model registry
-legacy/         -> v1 designs, kept exactly as they were built
-404.html        -> forwards old /c/<code> links to ?c=<code>
+404.html        -> sends unknown paths back to the generator
 """
 import argparse
 import json
@@ -19,10 +18,8 @@ SHARED = ("_engine", "_lib", "_fonts", "_kit", "_codec")
 
 REDIRECT_404 = """<!doctype html><meta charset="utf-8"><title>AESS</title>
 <script>
-  // Old links looked like /c/<code>; the static site uses ?c=<code>.
-  var p = location.pathname, i = p.indexOf("/c/");
-  if (i >= 0) location.replace(p.slice(0, i + 1) + "?c=" + encodeURIComponent(p.slice(i + 3).split("/")[0]));
-  else location.replace(p.slice(0, p.lastIndexOf("/") + 1) || "/");
+  var p = location.pathname, i = p.indexOf("/", 1);
+  location.replace(location.hostname.endsWith("github.io") && i > 0 ? p.slice(0, i + 1) : "/");
 </script>
 <p>Redirecting… <a href="./">Open the AESS generator</a></p>
 """
@@ -47,17 +44,15 @@ def main():
     manifests = []
     for mpath in sorted((ROOT / "models").glob("*/v*/manifest.json")):
         m = json.loads(mpath.read_text())
-        m.setdefault("engine", "solidcraft")
+        if m.get("engine") != "browser":
+            continue  # SolidCraft reference models are for development only
         manifests.append(m)
         dest = models_out / mpath.parent.relative_to(ROOT / "models")
         dest.mkdir(parents=True)
         shutil.copy(mpath, dest / "manifest.json")
-        if m["engine"] == "browser":
-            shutil.copy(mpath.parent / m["runtime"]["entry"], dest / m["runtime"]["entry"])
+        shutil.copy(mpath.parent / m["runtime"]["entry"], dest / m["runtime"]["entry"])
     (models_out / "index.json").write_text(json.dumps({"registry": registry, "models": manifests}, separators=(",", ":")))
 
-    if (ROOT / "legacy").exists():
-        shutil.copytree(ROOT / "legacy", out / "legacy")
     (out / "404.html").write_text(REDIRECT_404)
     (out / ".nojekyll").write_text("")
     if args.cname:

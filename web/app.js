@@ -1,6 +1,5 @@
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/OrbitControls.js";
-import { STLLoader } from "three/addons/STLLoader.js";
 import { writeSTL, write3MF, readDesignFile } from "./files.js";
 
 const SITE = "https://aess.billowapp.dev";
@@ -41,7 +40,6 @@ const S = {
   baselineLabel: "the defaults",
   code: null,        // code of the current values
   result: null,      // last build (mesh arrays + stats) for `code`
-  legacy: null,      // an opened v1 (server-built) design
   stack: false,
 };
 let codec = null;
@@ -96,14 +94,13 @@ function renderTabs() {
     .sort((a, b) => reg[a] - reg[b]);
   for (const name of names) {
     const m = latestOf(name);
-    const active = (S.legacy?.model ?? S.manifest?.model) === name;
+    const active = S.manifest?.model === name;
     nav.append(el("button", { role: "tab", "aria-selected": String(active), onclick: () => selectModel(name) },
       m.title.replace("Storage ", "").replace(/^\w/, (c) => c.toUpperCase())));
   }
 }
 
 function selectModel(name, { version = null, values = null, label = null } = {}) {
-  S.legacy = null;
   S.manifest = version ? getManifest(name, version) : latestOf(name);
   const defaults = Object.fromEntries(S.manifest.params.map((p) => [p.id, p.default]));
   const draft = values ? null : LS.get(`draft.${name}.v${S.manifest.version}`, null);
@@ -118,8 +115,6 @@ function selectModel(name, { version = null, values = null, label = null } = {})
 
 function renderPanel() {
   const m = S.manifest;
-  $("#legacyView").hidden = true;
-  $("#editor").hidden = false;
   $("#modelIntro").innerHTML = "";
   $("#modelIntro").append(
     el("h1", {}, m.title, el("span", { class: "ver", title: "Model version" }, `v${m.version}`)),
@@ -413,23 +408,11 @@ function remember(code) {
 async function openCode(raw, { quiet = false } = {}) {
   const text = String(raw).trim();
   if (!text) return;
-  // New codes start "AE2-…", old (v1, server-built) codes "AE-XXXXX-XXXXX". Without
-  // dashes the two can look alike, so try the new format first, then the old one.
-  const legacyBody = text.toUpperCase().replace(/[^0-9A-Z]/g, "").replace(/^AE/, "");
-  const looksLegacy = /^\s*AE\s*[-_.\s]/i.test(text) && /^[0-9A-Z]{10,16}$/.test(legacyBody);
   try {
-    if (!looksLegacy && codec.normalizeCode(text)) {
-      try {
-        const d = codec.decode(text, S.index.registry, getManifest);
-        selectModel(d.model, { version: d.version, values: d.values, label: d.code });
-        if (!quiet) toast(`Opened ${d.code}`);
-        return;
-      } catch (e) {
-        if (!/^[0-9A-Z]{10,16}$/.test(legacyBody)) throw e;
-      }
-    }
-    if (/^[0-9A-Z]{10,16}$/.test(legacyBody)) return await openLegacy(`AE-${legacyBody.slice(0, 5)}-${legacyBody.slice(5)}`, quiet);
-    throw new Error("That doesn't look like an AESS code (they start with AE2- or AE-).");
+    if (!codec.normalizeCode(text)) throw new Error("That doesn't look like an AESS code (they start with AE2-).");
+    const d = codec.decode(text, S.index.registry, getManifest);
+    selectModel(d.model, { version: d.version, values: d.values, label: d.code });
+    if (!quiet) toast(`Opened ${d.code}`);
   } catch (e) {
     toast(e.message, true);
   }
@@ -441,41 +424,6 @@ function openInLatest(model, values) {
   const carried = Object.fromEntries(Object.entries(values).filter(([k]) => latest.params.some((p) => p.id === k)));
   selectModel(model, { values: carried, label: "the original design" });
   toast(`Opened in ${latest.title} v${latest.version}. It has a new code.`);
-}
-
-// v1 designs were built on the old server; their files are kept as they were.
-async function openLegacy(code, quiet) {
-  const r = await fetch(`legacy/${code}/config.json`);
-  if (!r.ok) throw new Error(`No design found for ${code}.`);
-  const cfg = await r.json();
-  const m = manifests().find((x) => x.model === cfg.model && x.version === cfg.version);
-  S.legacy = cfg;
-  S.code = null; S.result = null;
-  buildSeq++; // drop any build still running for the previous design
-  $("#result").innerHTML = "";
-  $("#issues").hidden = true;
-  renderTabs();
-  $("#editor").hidden = true;
-  const box = $("#legacyView");
-  box.hidden = false;
-  box.innerHTML = "";
-  const rows = m.params.map((p) => el("div", { class: "kv" }, el("span", {}, p.label), el("b", {}, fmtValue(p, cfg.params[p.id]))));
-  box.append(
-    el("h1", {}, m.title, el("span", { class: "ver" }, `v${cfg.version}`)),
-    el("p", { class: "muted" }, `Saved design ${code}, made ${cfg.created.slice(0, 10)}. Its files are kept exactly as they were built.`),
-    el("div", { class: "code-row" }, el("button", { class: "code-chip", onclick: () => copy(code, "Code copied") }, code)),
-    el("div", { class: "dl-row" }, ...["3mf", "stl", "step"].map((f) =>
-      el("a", { class: "btn", href: `legacy/${code}/model.${f}`, download: `aess-${designName(m, cfg.params)}-v${cfg.version}-${code}.${f}` }, f.toUpperCase()))),
-    el("button", { class: "btn primary big", onclick: () => openInLatest(cfg.model, cfg.params) }, `Edit in the latest version`),
-    el("div", { class: "kv-list" }, rows));
-  const url = new URL(location.href);
-  url.search = `?c=${code}`;
-  history.replaceState(null, "", url);
-  const [sx, sy, sz] = cfg.stats.size_mm;
-  $("#dims").innerHTML = `<div class="big">${fmt(sx)} × ${fmt(sy)} × ${fmt(sz)} mm</div>
-    <div class="sub">Saved ${m.title.toLowerCase()} · version ${cfg.version}</div>`;
-  viewer.showSTL(`legacy/${code}/model.stl`);
-  if (!quiet) toast(`Opened ${code}`);
 }
 
 async function openFile(file) {
@@ -625,7 +573,7 @@ class Viewer {
     geom.computeVertexNormals();
     for (const c of [...this.group.children]) { this.group.remove(c); if (c.geometry !== geom) c.geometry?.dispose(); }
     this.group.add(new THREE.Mesh(geom, this.mat));
-    if (S.stack && !S.legacy && S.manifest?.model === "bin" && S.values.lip) {
+    if (S.stack && S.manifest?.model === "bin" && S.values.lip) {
       const top = new THREE.Mesh(geom, this.ghost);
       top.position.z = 7 * S.values.gz;
       this.group.add(top);
@@ -641,13 +589,6 @@ class Viewer {
     geom.setIndex(new THREE.BufferAttribute(indices, 1));
     this.lastGeom = geom.toNonIndexed();
     this.setGeometry(this.lastGeom);
-  }
-  async showSTL(url) {
-    try {
-      const geom = await new STLLoader().loadAsync(url);
-      this.lastGeom = geom;
-      this.setGeometry(geom);
-    } catch { toast("Couldn't load the 3D preview, but the downloads still work.", true); }
   }
   refresh() { if (this.lastGeom) this.setGeometry(this.lastGeom); }
   frame(view = "iso") {
@@ -703,7 +644,7 @@ $("#stackBtn").addEventListener("click", () => {
   const first = latestOf(LS.get("lastModel", "bin")) || latestOf("bin");
   codec = await import(`./models/${first.runtime.codec}`);
   await work({ type: "prepare", manifest: first }).catch(() => {});
-  // ?c=CODE, or an old /c/CODE link forwarded by 404.html
+  // ?c=CODE share links
   const q = new URLSearchParams(location.search).get("c") || (location.hash.match(/c=([\w-]+)/) || [])[1];
   if (q) {
     selectModel(first.model);
