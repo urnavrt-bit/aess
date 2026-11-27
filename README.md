@@ -3,7 +3,7 @@
 # AESS
 
 **Tough, modular, fully parametric storage for the home and the workshop.**
-Gridfinity-compatible bins and baseplates, plus a web generator that turns your settings into print-ready files.
+Gridfinity-compatible bins, baseplates and lids, plus a web generator that turns your settings into print-ready files.
 
 [**Open the generator → aess.billowapp.dev**](https://aess.billowapp.dev)
 
@@ -30,13 +30,14 @@ Gridfinity-compatible bins and baseplates, plus a web generator that turns your 
 |---|---|
 | <img src="docs/images/bin-dividers.png" width="420"> | **Bins.** 1–8 × 1–8 grid units, 2–16 height units. Equal-spaced dividers in both directions, a 45° label shelf, a finger scoop, magnet and/or screw holes, and a stacking lip (or a flat top for low drawers). |
 | <img src="docs/images/baseplate-magnets-screws.png" width="420"> | **Baseplates.** 1–10 × 1–10 grid. Light open frame or solid floor with magnet pockets and countersunk mounting holes. Padding to fill a drawer exactly; *Fit to drawer* works out the grid for you. |
-| <img src="docs/images/code-engraving.png" width="420"> | **Config code engraving.** Under the first foot of a bin and along the front edge of a baseplate, reading the right way up when you tip the part toward you. |
+| <img src="docs/images/lid-stacking.png" width="420"> | **Lids.** 1–8 × 1–8 grid. Drops into any bin's stacking lip. A stacking top with baseplate pockets (and optional magnets) so bins of any size still stack on a lidded bin, or a flat top. A 45° finger grip at the front lifts it even in a full drawer. |
+| <img src="docs/images/code-engraving.png" width="420"> | **Config code engraving.** Under the first foot of a bin, along the front edge of a baseplate and under a lid, reading the right way up when you tip the part toward you. |
 
 Bins stack on each other the same way they sit in a baseplate, and work with any Gridfinity baseplate (and vice versa).
 
 ## Using the generator
 
-1. Pick **Bin** or **Baseplate**, or start from a preset (*Small parts*, *Heavy tools*, *Kitchen drawer*, *Desk tray*, *Bathroom*…).
+1. Pick **Bin**, **Baseplate** or **Lid**, or start from a preset (*Small parts*, *Heavy tools*, *Kitchen drawer*, *Desk tray*, *Bathroom*…).
 2. Adjust settings. The 3D view is the exact model, rebuilt as you go, with the outside, inside and compartment sizes. Every changed setting can be reset on its own.
 3. Download **3MF** (slicers; includes the design data and a thumbnail) or **STL**.
 4. Keep the code or the file, or copy the share link (`aess.billowapp.dev/?c=<code>`). Open a code with the box at the top, or drop a file anywhere on the page.

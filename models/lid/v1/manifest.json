@@ -1,0 +1,189 @@
+{
+  "model": "lid",
+  "version": 1,
+  "title": "Lid",
+  "summary": "A lid that drops into a bin's stacking lip. Its top takes bins like a baseplate, so lidded bins still stack, or it can be a plain flat cover.",
+  "released": "2026-11-27",
+  "engine": "browser",
+  "runtime": {
+    "manifold": "_engine/manifold-3.5.5/manifold.js",
+    "opentype": "_lib/opentype-1.3.4/opentype.module.js",
+    "font": "_fonts/atkinson-hyperlegible-bold/font.ttf",
+    "kit": "_kit/k1/kit.js",
+    "codec": "_codec/c1/codec.js",
+    "entry": "model.js"
+  },
+  "reference": {
+    "solidcraft": "lid/v1"
+  },
+  "formats": [
+    "3mf",
+    "stl"
+  ],
+  "groups": [
+    {
+      "id": "size",
+      "title": "Size",
+      "help": "Match the width and depth of the bin it covers, in 42 mm grid units. The lid fits any bin with a stacking lip, whatever its height."
+    },
+    {
+      "id": "top",
+      "title": "Top",
+      "help": "A stacking top has the same pockets as a baseplate, so bins of any size lock onto the lidded bin. A flat top is lower and easy to wipe."
+    },
+    {
+      "id": "grip",
+      "title": "Grip",
+      "help": "A finger grip at the front edge lets you lift the lid even when bins stand right next to each other."
+    }
+  ],
+  "params": [
+    {
+      "id": "gx",
+      "group": "size",
+      "label": "Width",
+      "type": "int",
+      "unit": "units",
+      "min": 1,
+      "max": 8,
+      "step": 1,
+      "default": 2,
+      "help": "Width along the front, in 42 mm grid units. Same as the bin's width."
+    },
+    {
+      "id": "gy",
+      "group": "size",
+      "label": "Depth",
+      "type": "int",
+      "unit": "units",
+      "min": 1,
+      "max": 8,
+      "step": 1,
+      "default": 1,
+      "help": "Depth front to back, in 42 mm grid units. Same as the bin's depth."
+    },
+    {
+      "id": "stack",
+      "group": "top",
+      "label": "Stacking top",
+      "type": "bool",
+      "default": true,
+      "help": "Pockets like a baseplate's on top, so other bins sit on the lid and stay put. Turn it off for a flat lid."
+    },
+    {
+      "id": "top_t",
+      "group": "top",
+      "label": "Top thickness",
+      "type": "float",
+      "unit": "mm",
+      "min": 0.6,
+      "max": 6,
+      "step": 0.05,
+      "default": 1.2,
+      "help": "Solid plate above the plug: the floor of the pockets on a stacking lid, or the whole top of a flat lid. A flat lid with a finger grip needs at least 2.8 mm."
+    },
+    {
+      "id": "magnets",
+      "group": "top",
+      "label": "Magnet holes",
+      "type": "bool",
+      "default": false,
+      "requires": "stack",
+      "help": "Four magnet pockets in each pocket floor, lined up with the magnet holes in bins, so bins on top stay put."
+    },
+    {
+      "id": "mag_d",
+      "group": "top",
+      "label": "Magnet diameter",
+      "type": "float",
+      "unit": "mm",
+      "min": 4,
+      "max": 8.5,
+      "step": 0.05,
+      "default": 6.5,
+      "requires": "magnets",
+      "help": "6.5 mm fits 6 x 2 mm magnets with glue clearance."
+    },
+    {
+      "id": "mag_h",
+      "group": "top",
+      "label": "Magnet depth",
+      "type": "float",
+      "unit": "mm",
+      "min": 1,
+      "max": 3.5,
+      "step": 0.05,
+      "default": 2.4,
+      "requires": "magnets",
+      "help": "Pocket depth from the floor of the stacking pockets."
+    },
+    {
+      "id": "grip",
+      "group": "grip",
+      "label": "Finger grip",
+      "type": "bool",
+      "default": true,
+      "help": "A 45° undercut in the front edge for a fingertip. It prints without supports."
+    },
+    {
+      "id": "grip_w",
+      "group": "grip",
+      "label": "Grip width",
+      "type": "float",
+      "unit": "mm",
+      "min": 10,
+      "max": 60,
+      "step": 0.5,
+      "default": 20,
+      "requires": "grip",
+      "help": "Width of the finger grip, centred on the front edge."
+    }
+  ],
+  "checks": [
+    {
+      "expr": "stack or not grip or top_t >= 2.8",
+      "message": "A flat lid needs a top at least 2.8 mm thick for the finger grip: make the top thicker or turn the grip off."
+    },
+    {
+      "expr": "not grip or grip_w <= gx*42 - 12",
+      "message": "The finger grip is wider than the lid's front edge allows: make it narrower."
+    }
+  ],
+  "presets": [
+    {
+      "name": "Stacking",
+      "help": "Bins sit on top and lock to the grid",
+      "values": {
+        "stack": true,
+        "grip": true
+      }
+    },
+    {
+      "name": "Magnetic stacking",
+      "help": "Magnet pockets hold magnetic bins on top",
+      "values": {
+        "stack": true,
+        "top_t": 2,
+        "magnets": true
+      }
+    },
+    {
+      "name": "Flat",
+      "help": "Low and smooth, for kitchen and bathroom bins",
+      "values": {
+        "stack": false,
+        "top_t": 2.8,
+        "grip": true
+      }
+    },
+    {
+      "name": "Dust cover",
+      "help": "Thinnest and lightest; lift it by the edges",
+      "values": {
+        "stack": false,
+        "top_t": 1.2,
+        "grip": false
+      }
+    }
+  ]
+}

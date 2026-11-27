@@ -1,0 +1,88 @@
+{
+ "reference": "lid/v1",
+ "cases": [
+  {
+   "values": {},
+   "volume_mm3": 20759.27,
+   "size_mm": [
+    83.5,
+    41.5,
+    10.6
+   ]
+  },
+  {
+   "values": {
+    "gx": 1,
+    "gy": 1,
+    "grip_w": 30
+   },
+   "volume_mm3": 9842.95,
+   "size_mm": [
+    41.5,
+    41.5,
+    10.35
+   ]
+  },
+  {
+   "values": {
+    "gx": 3,
+    "gy": 2,
+    "top_t": 2.5,
+    "magnets": true,
+    "mag_d": 6.2,
+    "mag_h": 3
+   },
+   "volume_mm3": 77520.66,
+   "size_mm": [
+    125.5,
+    83.5,
+    11.9
+   ]
+  },
+  {
+   "values": {
+    "gx": 2,
+    "gy": 3,
+    "stack": false,
+    "top_t": 2.8,
+    "grip_w": 40
+   },
+   "volume_mm3": 75536.62,
+   "size_mm": [
+    83.5,
+    125.5,
+    7.55
+   ]
+  },
+  {
+   "values": {
+    "gx": 4,
+    "gy": 1,
+    "stack": false,
+    "grip": false,
+    "top_t": 0.6
+   },
+   "volume_mm3": 33794.04,
+   "size_mm": [
+    167.5,
+    41.5,
+    5.35
+   ]
+  },
+  {
+   "values": {
+    "gx": 1,
+    "gy": 2,
+    "grip": false,
+    "top_t": 6,
+    "magnets": true
+   },
+   "volume_mm3": 36777.48,
+   "size_mm": [
+    41.5,
+    83.5,
+    15.4
+   ]
+  }
+ ]
+}

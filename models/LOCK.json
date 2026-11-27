@@ -34,8 +34,14 @@
     "manifest.json": "516eeb90ec55021d11d995cac817c865026dd50450b19c9870f9f7f0d4554c57",
     "model.js": "c340e1688581709749fedb3ac13073598b3f45769046050d2a887df95e37a65c"
   },
+  "lid/v1": {
+    "manifest.json": "99c83f1a61eb952b0c6dd65c72f4956d2aceb2ced8471f0d92b4c55d53025d9e",
+    "model.js": "0f425bfbd41b158fa4f7966112e1f1760383197e94be12b9f4e665a1f9199586",
+    "model.sc": "1ca93da2dacbcad98910127aa72c6d057d706614a87dfa05d3d1e15ee55b32c0"
+  },
   "registry.json": {
     "baseplate": 2,
-    "bin": 1
+    "bin": 1,
+    "lid": 3
   }
 }

@@ -155,7 +155,7 @@ function renderPanel() {
 
   const groups = $("#groups");
   groups.innerHTML = "";
-  const openGroups = LS.get("openGroups", ["size", "strength", "inside", "edge", "floor"]);
+  const openGroups = LS.get("openGroups", ["size", "strength", "inside", "edge", "floor", "top", "grip"]);
   for (const g of m.groups) {
     const det = el("details", { class: "group", "data-group": g.id, open: openGroups.includes(g.id) });
     det.addEventListener("toggle", () => {
@@ -403,7 +403,7 @@ async function copy(text, msg) {
 }
 
 function designName(m, v) {
-  return m.model === "bin" ? `bin-${v.gx}x${v.gy}x${v.gz}` : `baseplate-${v.gx}x${v.gy}`;
+  return m.model === "bin" ? `bin-${v.gx}x${v.gy}x${v.gz}` : `${m.model}-${v.gx}x${v.gy}`;
 }
 
 async function download(kind) {
@@ -435,7 +435,7 @@ async function download(kind) {
 function remember(code) {
   if (!code || !S.manifest) return;
   const v = S.values;
-  const desc = S.manifest.model === "bin" ? `Bin ${v.gx}×${v.gy}×${v.gz}` : `Baseplate ${v.gx}×${v.gy}`;
+  const desc = S.manifest.model === "bin" ? `Bin ${v.gx}×${v.gy}×${v.gz}` : `${S.manifest.title} ${v.gx}×${v.gy}`;
   const list = LS.get("recent", []).filter((r) => r.code !== code);
   list.unshift({ code, desc: `${desc} · v${S.manifest.version}`, t: Date.now() });
   LS.set("recent", list.slice(0, 40));
@@ -496,6 +496,11 @@ function updateDims() {
       <div class="sub">Inside <b>${fmt(iw)} × ${fmt(id)}</b>, <b>${fmt(depth)}</b> deep</div>
       ${comp > 1 ? `<div class="sub"><b>${comp}</b> compartments of <b>${fmt(cw)} × ${fmt(cd)}</b> mm</div>` : ""}
       <div class="sub">${v.lip ? "Stackable" : "Flat top, no stacking"} · fits ${v.gx}×${v.gy} grid</div>`;
+  } else if (S.manifest.model === "lid") {
+    const W = 42 * v.gx - 0.5, D = 42 * v.gy - 0.5, Ht = 4.75 + v.top_t + (v.stack ? 4.65 : 0);
+    box.innerHTML = `<div class="big">${fmt(W)} × ${fmt(D)} × ${fmt(Ht, 2)} mm</div>
+      <div class="sub">Fits any <b>${v.gx}×${v.gy}</b> bin with a stacking lip</div>
+      <div class="sub">${v.stack ? `Takes bins on top, like a <b>${v.gx}×${v.gy}</b> baseplate` : "Flat top"}${v.grip ? " · finger grip at the front" : ""}</div>`;
   } else {
     const W = 42 * v.gx - 0.5 + 2 * v.pad_x, D = 42 * v.gy - 0.5 + 2 * v.pad_y, Hp = 4.65 + v.floor_t;
     const bed = LS.get("bed", 256), fits = W <= bed && D <= bed;
