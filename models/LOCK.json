@@ -69,6 +69,11 @@
     "model.js": "0f425bfbd41b158fa4f7966112e1f1760383197e94be12b9f4e665a1f9199586",
     "model.sc": "1ca93da2dacbcad98910127aa72c6d057d706614a87dfa05d3d1e15ee55b32c0"
   },
+  "lid/v2": {
+    "manifest.json": "f95105872a5383a2722b4f8d75181d857f51c43861f14b04f45d376795c75efe",
+    "model.js": "56fbe12d4b74786c2b6cf5e48162baf1c96779f468a5cb1931e446d69d61440d",
+    "model.sc": "4ab9e2d456cd99e114d16789e977c364a3fcf9d6a6ff477ef44faad08806ccd5"
+  },
   "registry.json": {
     "baseplate": 2,
     "bin": 1,

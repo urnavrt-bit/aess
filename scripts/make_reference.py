@@ -150,6 +150,22 @@ REFERENCES = {
         {"gx": 4, "gy": 1, "stack": False, "grip": False, "top_t": 0.6},
         {"gx": 1, "gy": 2, "grip": False, "top_t": 6, "magnets": True},
     ]},
+    "lid/v2": {"features": {
+        "stack": {"on": {"has_stack": "1"}, "off": {"has_stack": "0"},
+                  "suppress_off": ["CellChamferTop", "CellVertical", "CellChamferLow", "CellGrid"]},
+        "magnets": {"suppress_off": ["LidMagnetHoles", "LidMagnetGrid"]},
+        "grip": {"suppress_off": ["Grip"]},
+        "snap": {"suppress_off": ["HookB", "SlotB", "SlitB1", "SlitB2", "ClipGridB",
+                                  "HookS", "SlotS", "SlitS1", "SlitS2", "ClipGridS", "SlitGridS"]},
+    }, "engraved": False, "cases": [
+        {}, {"gx": 1, "gy": 1, "grip_w": 30},
+        {"gx": 3, "gy": 2, "top_t": 2.5, "magnets": True, "mag_d": 6.2, "mag_h": 3},
+        {"gx": 2, "gy": 3, "stack": False, "top_t": 2.8, "grip_w": 40},
+        {"gx": 4, "gy": 1, "stack": False, "grip": False, "top_t": 0.6},
+        {"gx": 1, "gy": 2, "grip": False, "top_t": 6, "magnets": True},
+        {"gx": 3, "gy": 3, "snap_d": 0.1}, {"gx": 2, "gy": 2, "snap": False},
+        {"gx": 1, "gy": 1, "stack": False, "top_t": 0.6, "grip": False, "snap_d": 0.3},
+    ]},
 }
 
 

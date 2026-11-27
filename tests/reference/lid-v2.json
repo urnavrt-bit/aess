@@ -1,0 +1,130 @@
+{
+ "reference": "lid/v2",
+ "cases": [
+  {
+   "values": {},
+   "volume_mm3": 20399.5,
+   "size_mm": [
+    83.5,
+    41.5,
+    10.6
+   ]
+  },
+  {
+   "values": {
+    "gx": 1,
+    "gy": 1,
+    "grip_w": 30
+   },
+   "volume_mm3": 9573.13,
+   "size_mm": [
+    41.5,
+    41.5,
+    10.35
+   ]
+  },
+  {
+   "values": {
+    "gx": 3,
+    "gy": 2,
+    "top_t": 2.5,
+    "magnets": true,
+    "mag_d": 6.2,
+    "mag_h": 3
+   },
+   "volume_mm3": 76891.07,
+   "size_mm": [
+    125.5,
+    83.5,
+    11.9
+   ]
+  },
+  {
+   "values": {
+    "gx": 2,
+    "gy": 3,
+    "stack": false,
+    "top_t": 2.8,
+    "grip_w": 40
+   },
+   "volume_mm3": 74817.08,
+   "size_mm": [
+    83.5,
+    125.5,
+    7.55
+   ]
+  },
+  {
+   "values": {
+    "gx": 4,
+    "gy": 1,
+    "stack": false,
+    "grip": false,
+    "top_t": 0.6
+   },
+   "volume_mm3": 33254.39,
+   "size_mm": [
+    167.5,
+    41.5,
+    5.35
+   ]
+  },
+  {
+   "values": {
+    "gx": 1,
+    "gy": 2,
+    "grip": false,
+    "top_t": 6,
+    "magnets": true
+   },
+   "volume_mm3": 36327.77,
+   "size_mm": [
+    41.5,
+    83.5,
+    15.4
+   ]
+  },
+  {
+   "values": {
+    "gx": 3,
+    "gy": 3,
+    "snap_d": 0.1
+   },
+   "volume_mm3": 99722.27,
+   "size_mm": [
+    125.5,
+    125.5,
+    10.6
+   ]
+  },
+  {
+   "values": {
+    "gx": 2,
+    "gy": 2,
+    "snap": false
+   },
+   "volume_mm3": 43422.87,
+   "size_mm": [
+    83.5,
+    83.5,
+    10.6
+   ]
+  },
+  {
+   "values": {
+    "gx": 1,
+    "gy": 1,
+    "stack": false,
+    "top_t": 0.6,
+    "grip": false,
+    "snap_d": 0.3
+   },
+   "volume_mm3": 7621.59,
+   "size_mm": [
+    41.5,
+    41.5,
+    5.35
+   ]
+  }
+ ]
+}

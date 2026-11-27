@@ -155,7 +155,7 @@ function renderPanel() {
 
   const groups = $("#groups");
   groups.innerHTML = "";
-  const openGroups = LS.get("openGroups", ["size", "strength", "inside", "edge", "floor", "top", "grip", "body", "stack", "front"]);
+  const openGroups = LS.get("openGroups", ["size", "strength", "inside", "edge", "floor", "top", "grip", "body", "stack", "front", "snap"]);
   for (const g of m.groups) {
     const det = el("details", { class: "group", "data-group": g.id, open: openGroups.includes(g.id) });
     det.addEventListener("toggle", () => {
@@ -517,7 +517,7 @@ function updateDims() {
     const W = 42 * v.gx - 0.5, D = 42 * v.gy - 0.5, Ht = 4.75 + v.top_t + (v.stack ? 4.65 : 0);
     box.innerHTML = `<div class="big">${fmt(W)} × ${fmt(D)} × ${fmt(Ht, 2)} mm</div>
       <div class="sub">Fits any <b>${v.gx}×${v.gy}</b> bin with a stacking lip</div>
-      <div class="sub">${v.stack ? `Takes bins on top, like a <b>${v.gx}×${v.gy}</b> baseplate` : "Flat top"}${v.grip ? " · finger grip at the front" : ""}</div>`;
+      <div class="sub">${v.stack ? `Takes bins on top, like a <b>${v.gx}×${v.gy}</b> baseplate` : "Flat top"}${v.grip ? " · finger grip at the front" : ""}${v.snap ? " · snaps on" : ""}</div>`;
   } else {
     // a joined edge (v3+) sits on the grid line; a free edge is trimmed 0.25 mm, then padded
     const edge = (joined, pad) => (joined ? 0 : pad - 0.25);
