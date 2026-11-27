@@ -26,6 +26,11 @@
     "manifest.json": "38565e16d9f69ba931ce7265648a53e7f6f6b955a623d8775ce239c3b758b8ee",
     "model.js": "a7168c34c7884853ceb532dca192eff723d1a7a00b4fbf06455209cb40e31039"
   },
+  "baseplate/v3": {
+    "manifest.json": "af09091c81917709abb370e83599cb9790ff03dc36998584f891c9e631ba9ab3",
+    "model.js": "1fb43e7ae5f5182dfd65751cb711eaaec2d5cebaa08e3405088f6c48ca7993a2",
+    "model.sc": "5cc115bc831546623926ebbb70184485bcc8920cf3e4368de36df9be6c17f989"
+  },
   "bin/v1": {
     "manifest.json": "234f073386fef715e6f0b94cd6d8ba48cc432ef9a1cd13d290d2732239d6c220",
     "model.sc": "3209ad58113719fcd746379b22f9aca94988b0e1689773291858be1cc38c270f"

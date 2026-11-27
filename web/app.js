@@ -502,11 +502,16 @@ function updateDims() {
       <div class="sub">Fits any <b>${v.gx}×${v.gy}</b> bin with a stacking lip</div>
       <div class="sub">${v.stack ? `Takes bins on top, like a <b>${v.gx}×${v.gy}</b> baseplate` : "Flat top"}${v.grip ? " · finger grip at the front" : ""}</div>`;
   } else {
-    const W = 42 * v.gx - 0.5 + 2 * v.pad_x, D = 42 * v.gy - 0.5 + 2 * v.pad_y, Hp = 4.65 + v.floor_t;
+    // a joined edge (v3+) sits on the grid line; a free edge is trimmed 0.25 mm, then padded
+    const edge = (joined, pad) => (joined ? 0 : pad - 0.25);
+    const W = 42 * v.gx + edge(v.join_l, v.pad_x) + edge(v.join_r, v.pad_x);
+    const D = 42 * v.gy + edge(v.join_f, v.pad_y) + edge(v.join_b, v.pad_y), Hp = 4.65 + v.floor_t;
     const bed = LS.get("bed", 256), fits = W <= bed && D <= bed;
+    const joins = [["left", v.join_l], ["right", v.join_r], ["front", v.join_f], ["back", v.join_b]].filter((j) => j[1]).map((j) => j[0]);
     box.innerHTML = `<div class="big">${fmt(W)} × ${fmt(D)} × ${fmt(Hp, 2)} mm</div>
       <div class="sub">Holds <b>${v.gx * v.gy}</b> grid squares (${v.gx} × ${v.gy})</div>
-      <div class="sub">${fits ? `Fits a ${bed} mm bed` : `<span style="color:var(--warn)">Larger than a ${bed} mm bed: split into smaller plates</span>`}</div>`;
+      <div class="sub">${fits ? `Fits a ${bed} mm bed` : `<span style="color:var(--warn)">Larger than a ${bed} mm bed: split into smaller plates</span>`}</div>
+      ${joins.length ? `<div class="sub">Joins other plates on the <b>${joins.join(", ")}</b></div>` : ""}`;
   }
 }
 
@@ -540,7 +545,7 @@ function openFit() {
     const W = 42 * gx - 0.5 + 2 * fx, D = 42 * gy - 0.5 + 2 * fy;
     const per = Math.max(1, Math.floor((bed - 2) / 42));
     $("#fitOut").innerHTML = `Grid <b>${gx} × ${gy}</b> (${gx * gy} squares), padding <b>${fx}</b> / <b>${fy}</b> mm per side.<br>Plate: <b>${fmt(W)} × ${fmt(D)} mm</b>.` +
-      (W > bed || D > bed ? `<br>Too big for a ${bed} mm bed: print <b>${Math.ceil(gx / per) * Math.ceil(gy / per)}</b> plates of up to ${per} × ${per} squares and set the padding only on the outer edges.` : "");
+      (W > bed || D > bed ? `<br>Too big for a ${bed} mm bed: print <b>${Math.ceil(gx / per) * Math.ceil(gy / per)}</b> plates of up to ${per} × ${per} squares and turn on <b>Join</b> for the edges where plates meet.` : "");
     return { gx: Math.min(10, gx), gy: Math.min(10, gy), pad_x: fx, pad_y: fy, bed };
   };
   f.oninput = calc;

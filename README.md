@@ -29,7 +29,7 @@ Gridfinity-compatible bins, baseplates and lids, plus a web generator that turns
 | | |
 |---|---|
 | <img src="docs/images/bin-dividers.png" width="420"> | **Bins.** 1–8 × 1–8 grid units, 2–16 height units. Equal-spaced dividers in both directions, a 45° label shelf, a finger scoop, magnet and/or screw holes, and a stacking lip (or a flat top for low drawers). |
-| <img src="docs/images/baseplate-magnets-screws.png" width="420"> | **Baseplates.** 1–10 × 1–10 grid. Light open frame or solid floor with magnet pockets and countersunk mounting holes. Padding to fill a drawer exactly; *Fit to drawer* works out the grid for you. |
+| <img src="docs/images/baseplate-magnets-screws.png" width="420"> | **Baseplates.** 1–10 × 1–10 grid. Light open frame (about 40% less filament than a full frame) or solid floor with magnet pockets and countersunk mounting holes. Plates join edge to edge with dovetail tabs into one bigger grid. Padding to fill a drawer exactly; *Fit to drawer* works out the grid for you. |
 | <img src="docs/images/lid-stacking.png" width="420"> | **Lids.** 1–8 × 1–8 grid. Drops into any bin's stacking lip. A stacking top with baseplate pockets (and optional magnets) so bins of any size still stack on a lidded bin, or a flat top. A 45° finger grip at the front lifts it even in a full drawer. |
 | <img src="docs/images/code-engraving.png" width="420"> | **Config code engraving.** Under the first foot of a bin, along the front edge of a baseplate and under a lid, reading the right way up when you tip the part toward you. |
 

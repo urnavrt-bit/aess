@@ -16,50 +16,79 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 CLI = shutil.which("solidcraft-cli") or str(Path.home() / ".local/bin/solidcraft-cli")
-SOLIDCRAFT_FEATURES = {
-    "bin": {
-        "lip": {"on": {"has_lip": "1"}, "off": {"has_lip": "0"},
-                "suppress_off": ["LipChamferTop", "LipVertical", "LipChamferLow", "LipSupport"]},
-        "label": {"suppress_off": ["LabelTabBlock", "LabelTabChamfer", "LabelTab"]},
-        "scoop": {"suppress_off": ["Scoop"]},
-        "magnets": {"suppress_off": ["MagnetHoles", "MagnetGrid"]},
-        "screws": {"suppress_off": ["ScrewHoles", "ScrewGrid"]},
-        "ndx": {"zero": ["DividerX", "DividersX"]},
-        "ndy": {"zero": ["DividerY", "DividersY"]},
-    },
-    "baseplate": {
-        "magnets": {"suppress_off": ["BpMagnetHoles", "BpMagnetGrid"]},
-        "screws": {"suppress_off": ["BpCountersink", "BpScrewHole", "BpScrewGrid"]},
-    },
-    "lid": {
-        "stack": {"on": {"has_stack": "1"}, "off": {"has_stack": "0"},
-                  "suppress_off": ["CellChamferTop", "CellVertical", "CellChamferLow", "CellGrid"]},
-        "magnets": {"suppress_off": ["LidMagnetHoles", "LidMagnetGrid"]},
-        "grip": {"suppress_off": ["Grip"]},
-    },
+# Per SolidCraft reference model (the manifest's `reference.solidcraft`): how each manifest
+# parameter maps onto it, which features depend on more than one parameter, and the designs
+# to build.
+#   on/off: parameter changes for a bool; suppress_off: features off while a bool is off;
+#   zero: features off while an int is 0; rules(values) -> {feature: active} for the rest.
+_bin = {
+    "lip": {"on": {"has_lip": "1"}, "off": {"has_lip": "0"},
+            "suppress_off": ["LipChamferTop", "LipVertical", "LipChamferLow", "LipSupport"]},
+    "label": {"suppress_off": ["LabelTabBlock", "LabelTabChamfer", "LabelTab"]},
+    "scoop": {"suppress_off": ["Scoop"]},
+    "magnets": {"suppress_off": ["MagnetHoles", "MagnetGrid"]},
+    "screws": {"suppress_off": ["ScrewHoles", "ScrewGrid"]},
+    "ndx": {"zero": ["DividerX", "DividersX"]},
+    "ndy": {"zero": ["DividerY", "DividersY"]},
 }
-# Reference models that carry an engraved code feature (always turned off: the fonts differ).
-ENGRAVED = {"bin", "baseplate"}
-CASES = {
-    "bin": [
+_bp = {
+    "magnets": {"suppress_off": ["BpMagnetHoles", "BpMagnetGrid"]},
+    "screws": {"suppress_off": ["BpCountersink", "BpScrewHole", "BpScrewGrid"]},
+}
+_join = lambda side, feats: {"on": {f"join_{side}": "1"}, "off": {f"join_{side}": "0"}, "suppress_off": feats}
+_win = [f"Win{n}{g}" for n in ("YIn", "YL", "YR", "XIn", "XF", "XB") for g in ("", "Grid")]
+
+
+def _bp3_rules(v):
+    on = {}
+    # a corner stays square (filled) when either edge beside it is joined
+    for name, a, b in (("FillFL", "join_l", "join_f"), ("FillFR", "join_r", "join_f"),
+                       ("FillBR", "join_r", "join_b"), ("FillBL", "join_l", "join_b")):
+        on[name] = bool(v[a] or v[b])
+    # inner grid lines exist only with 2 or more squares
+    on["WinYIn"] = on["WinYInGrid"] = bool(v["light"]) and v["gx"] > 1
+    on["WinXIn"] = on["WinXInGrid"] = bool(v["light"]) and v["gy"] > 1
+    return on
+
+
+REFERENCES = {
+    "bin/v1": {"features": _bin, "engraved": True, "cases": [
         {}, {"gx": 1, "gy": 1, "gz": 3},
         {"gx": 3, "gy": 2, "gz": 6, "wall": 2.2, "ndx": 2, "ndy": 1, "scoop": True, "magnets": True},
         {"gx": 2, "gy": 2, "gz": 4, "lip": False, "label": False, "screws": True, "floor_z": 9},
         {"gx": 4, "gy": 1, "gz": 2, "ndx": 3, "label": False, "wall": 1.2, "lip_flat": 0.8},
         {"gx": 1, "gy": 3, "gz": 8, "ndy": 2, "scoop": True, "scoop_r": 20, "div_drop": 10, "label_w": 16},
-    ],
-    "baseplate": [
+    ]},
+    "baseplate/v1": {"features": _bp, "engraved": True, "cases": [
         {}, {"gx": 4, "gy": 3, "pad_x": 0, "pad_y": 0},
         {"gx": 3, "gy": 2, "floor_t": 5, "magnets": True, "screws": True},
         {"gx": 1, "gy": 1, "floor_t": 3.5, "magnets": True, "pad_x": 6, "pad_y": 0.5},
-    ],
-    "lid": [
+    ]},
+    "baseplate/v3": {"features": {
+        **_bp, "light": {"suppress_off": _win},
+        "join_l": _join("l", ["SockL", "SockLGrid"]), "join_r": _join("r", ["TabR", "TabRGrid"]),
+        "join_f": _join("f", ["SockF", "SockFGrid"]), "join_b": _join("b", ["TabB", "TabBGrid"]),
+    }, "rules": _bp3_rules, "engraved": True, "cases": [
+        {}, {"gx": 4, "gy": 3, "pad_x": 0, "pad_y": 0, "light": False},
+        {"gx": 3, "gy": 2, "floor_t": 5, "magnets": True, "screws": True},
+        {"gx": 1, "gy": 1, "floor_t": 3.5, "magnets": True, "pad_x": 6, "pad_y": 0.5},
+        {"gx": 3, "gy": 3, "join_l": True, "join_r": True, "join_f": True, "join_b": True, "fit": 0.25},
+        {"gx": 2, "gy": 4, "join_r": True, "join_b": True, "pad_x": 5, "pad_y": 2, "light": False},
+        {"gx": 4, "gy": 2, "join_l": True, "join_f": True, "floor_t": 3, "magnets": True, "pad_x": 0},
+        {"gx": 1, "gy": 3, "join_l": True, "join_r": True, "pad_y": 0},
+    ]},
+    "lid/v1": {"features": {
+        "stack": {"on": {"has_stack": "1"}, "off": {"has_stack": "0"},
+                  "suppress_off": ["CellChamferTop", "CellVertical", "CellChamferLow", "CellGrid"]},
+        "magnets": {"suppress_off": ["LidMagnetHoles", "LidMagnetGrid"]},
+        "grip": {"suppress_off": ["Grip"]},
+    }, "engraved": False, "cases": [
         {}, {"gx": 1, "gy": 1, "grip_w": 30},
         {"gx": 3, "gy": 2, "top_t": 2.5, "magnets": True, "mag_d": 6.2, "mag_h": 3},
         {"gx": 2, "gy": 3, "stack": False, "top_t": 2.8, "grip_w": 40},
         {"gx": 4, "gy": 1, "stack": False, "grip": False, "top_t": 0.6},
         {"gx": 1, "gy": 2, "grip": False, "top_t": 6, "magnets": True},
-    ],
+    ]},
 }
 
 
@@ -78,9 +107,9 @@ def stl_volume_size(path):
     return round(abs(vol), 2), [round(hi[i] - lo[i], 3) for i in range(3)]
 
 
-def script_for(model, manifest, values):
-    feats = SOLIDCRAFT_FEATURES[model]
-    changes, on, off = {}, set(), ({"CodeEngrave"} if model in ENGRAVED else set())
+def script_for(ref, manifest, values):
+    feats = ref["features"]
+    changes, on, off = {}, set(), ({"CodeEngrave"} if ref["engraved"] else set())
     value = lambda p: values.get(p["id"], p["default"])
     for p in manifest["params"]:
         v = value(p)
@@ -95,6 +124,10 @@ def script_for(model, manifest, values):
             (off if v == 0 else on).update(f["zero"])
             v = max(v, 1)
         changes[p["id"]] = f"{v}" if p["type"] == "int" or p.get("unit") in ("", "units") else f"{v} mm"
+    if ref.get("rules"):
+        for name, active in ref["rules"]({p["id"]: value(p) for p in manifest["params"]}).items():
+            (on if active else off).add(name)
+    on -= off
     cmds = []
     if on:
         cmds.append({"command": "timeline.suppress", "params": {"features": sorted(on), "suppressed": False}})
@@ -104,23 +137,22 @@ def script_for(model, manifest, values):
     return {"commands": cmds}
 
 
-for model, cases in CASES.items():
-    if sys.argv[1:] and model not in sys.argv[1:]:
+models = sys.argv[1:]
+for mpath in sorted(ROOT.glob("models/*/v*/manifest.json")):
+    m = json.loads(mpath.read_text())
+    if m.get("engine") != "browser" or (models and m["model"] not in models):
         continue
-    for mpath in sorted(ROOT.glob(f"models/{model}/v*/manifest.json")):
-        m = json.loads(mpath.read_text())
-        if m.get("engine") != "browser":
-            continue
-        ref = m["reference"]["solidcraft"]
-        out = []
-        for values in cases:
-            with tempfile.TemporaryDirectory() as d:
-                s, stl = Path(d) / "s.json", Path(d) / "m.stl"
-                s.write_text(json.dumps(script_for(model, m, values)))
-                subprocess.run([CLI, "run", str(s), "--in", str(ROOT / "models" / ref / "model.sc"), "--quiet",
-                                "--quality", "finest", "--out", str(stl)], check=True)
-                vol, size = stl_volume_size(stl)
-            out.append({"values": values, "volume_mm3": vol, "size_mm": size})
-            print(model, m["version"], values, vol, size, flush=True)
-        dest = ROOT / "tests" / "reference" / f"{model}-v{m['version']}.json"
-        dest.write_text(json.dumps({"reference": ref, "cases": out}, indent=1) + "\n")
+    name = m["reference"]["solidcraft"]
+    ref = REFERENCES[name]
+    out = []
+    for values in ref["cases"]:
+        with tempfile.TemporaryDirectory() as d:
+            s, stl = Path(d) / "s.json", Path(d) / "m.stl"
+            s.write_text(json.dumps(script_for(ref, m, values)))
+            subprocess.run([CLI, "run", str(s), "--in", str(ROOT / "models" / name / "model.sc"), "--quiet",
+                            "--quality", "finest", "--out", str(stl)], check=True)
+            vol, size = stl_volume_size(stl)
+        out.append({"values": values, "volume_mm3": vol, "size_mm": size})
+        print(m["model"], m["version"], values, vol, size, flush=True)
+    dest = ROOT / "tests" / "reference" / f"{m['model']}-v{m['version']}.json"
+    dest.write_text(json.dumps({"reference": name, "cases": out}, indent=1) + "\n")

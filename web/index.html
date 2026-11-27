@@ -78,14 +78,14 @@
       <div class="help-content">
         <h3 id="h-start">Getting started</h3>
         <ol>
-          <li>Pick <b>Bin</b> or <b>Baseplate</b> at the top, or start from a preset.</li>
+          <li>Pick <b>Bin</b>, <b>Baseplate</b> or <b>Lid</b> at the top, or start from a preset.</li>
           <li>Adjust the settings on the left. The 3D view shows the exact model and updates instantly; everything is built in your browser.</li>
           <li>Download <b>3MF</b> (best for slicers) or <b>STL</b>.</li>
           <li>Keep the <b>config code</b>, or just keep the file: either one brings back exactly this design.</li>
         </ol>
         <h3 id="h-grid">Grid &amp; sizes</h3>
         <p>Everything sits on a <b>42 mm grid</b>. A bin that is 2 × 1 units is 83.5 mm × 41.5 mm (0.5 mm smaller than the grid so it drops in easily). Height is counted in <b>7 mm units</b>: a 3-unit bin is 21 mm to the top of its wall, plus about 4 mm of stacking lip.</p>
-        <p>Baseplates hold bins in place. Use <i>Fit to drawer</i> in the baseplate settings to get the largest grid that fits a drawer, with padding to fill the gap.</p>
+        <p>Baseplates hold bins in place. Use <i>Fit to drawer</i> in the baseplate settings to get the largest grid that fits a drawer, with padding to fill the gap. The light frame (on by default) lowers the middle of each grid line: bins stand on the drawer floor and the frame only keeps them in place, so it uses about 40% less filament.</p>
         <p>Lids drop into a bin's stacking lip. A stacking lid has baseplate pockets on top, so bins of any size still stack on a lidded bin; a flat lid is lower and easy to wipe. Lift a lid by the finger grip at its front edge.</p>
         <h3 id="h-codes">Config codes</h3>
         <p>Every design has a code like <code>AE2-1QG8K-R</code>. The code itself contains the model, its <b>exact version</b> and every setting you changed, so it rebuilds the identical part even after new versions come out, with no account and no server. The code is also <b>engraved on the underside</b> of every part (under the front-left foot of a bin, along the front edge of a baseplate, under the front-left of a lid), so you can always read it off a printed part. If a newer version exists, you'll be offered the choice to open your design in it; the original stays available.</p>
@@ -97,7 +97,7 @@
           <li><b>Settings:</b> 0.2 mm layers, 3–4 perimeters, 15% gyroid infill. No supports needed; every overhang is 45° or less.</li>
           <li><b>Orientation:</b> print bins, baseplates and lids as exported, flat side down. A lid prints plug-down, with no supports.</li>
           <li><b>Magnets:</b> 6 × 2 mm neodymium discs. Put a drop of CA glue in each hole, and keep polarity consistent between bins and plates.</li>
-          <li><b>Large baseplates:</b> if a plate is bigger than your bed, generate several smaller plates. They line up edge to edge on the grid.</li>
+          <li><b>Large baseplates:</b> if a plate is bigger than your bed, print several smaller plates and turn on <b>Join</b> for the edges where they meet. Tabs on right and back edges press into sockets on the left and front edges of the next plate, and the grid stays exact across the seam. If joints are too tight or loose, change <i>Joint clearance</i>.</li>
         </ul>
         <h3 id="h-tough">Making it tough</h3>
         <p>The defaults are already stronger than a typical Gridfinity bin: 1.6 mm walls, a 2.25 mm floor, a rounded inside corner where walls meet the floor, and a lip with a flat top instead of a knife edge. For heavy tools, raise <b>Wall thickness</b> to 2.0–2.4 mm and <b>Floor height</b> to 8 mm, and print with 4 perimeters in PETG. Set walls to a multiple of your nozzle's line width (0.4 mm → 1.2, 1.6, 2.0, 2.4).</p>
