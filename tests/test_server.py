@@ -68,8 +68,10 @@ class ServerTests(unittest.TestCase):
         m = self.reg.get("bin", 1)
         params = app.normalize_params(m, {"ndx": 0, "magnets": True, "lip": False})
         script = app.build_script(m, params, "AE-WCFJS-5ZCVN")["commands"]
-        changes = {c["params"]["name"]: c["params"]["expression"]
-                   for c in script if c["command"] == "parameters.change"}
+        param_steps = [c for c in script if c["command"] == "parameters.change"]
+        self.assertEqual(len(param_steps), 1, "all parameters must be set in one step (one rebuild)")
+        self.assertEqual(script[-1]["command"], "parameters.change")
+        changes = param_steps[0]["params"]["changes"]
         self.assertEqual(changes["code1"], "'AE-WCFJS'")
         self.assertEqual(changes["code2"], "'5ZCVN'")
         self.assertEqual(changes["ndx"], "1")          # pattern count kept valid

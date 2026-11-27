@@ -84,7 +84,7 @@ python3 server/app.py --port 8000        # http://localhost:8000
 python3 -m unittest discover -s tests    # tests (SolidCraft not needed)
 ```
 
-To run it as a service, see [`deploy/aess.service`](deploy/aess.service). Configuration is done with environment variables:
+To run it as a service, see [`deploy/aess.service`](deploy/aess.service). In production the service runs from its own checkout (`~/aess`, data in `~/aess-data`); `scripts/deploy.sh` checks the model lock, runs the tests, updates that checkout to the committed `main`, restarts the service and pre-builds every preset. Configuration is done with environment variables:
 
 | Variable | Default | |
 |---|---|---|

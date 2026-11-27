@@ -1,0 +1,97 @@
+[
+ {
+  "code": "AE-52EYM-4F58B",
+  "model": "bin",
+  "version": 1,
+  "params": {
+   "div_drop": 0.0,
+   "div_t": 1.2,
+   "floor_z": 7.0,
+   "gx": 2,
+   "gy": 1,
+   "gz": 3,
+   "label": true,
+   "label_w": 12.0,
+   "lip": true,
+   "lip_flat": 0.4,
+   "mag_d": 6.5,
+   "mag_h": 2.4,
+   "magnets": false,
+   "ndx": 0,
+   "ndy": 0,
+   "scoop": false,
+   "scoop_r": 10.0,
+   "screw_d": 3.0,
+   "screw_h": 6.0,
+   "screws": false,
+   "wall": 1.6
+  },
+  "volume_mm3": 35601.9,
+  "triangles": 32892,
+  "size_mm": [
+   83.5,
+   41.5,
+   25.0
+  ]
+ },
+ {
+  "code": "AE-C6207-Q24A2",
+  "model": "baseplate",
+  "version": 1,
+  "params": {
+   "cs_d": 9.0,
+   "floor_t": 0.0,
+   "gx": 4,
+   "gy": 3,
+   "mag_d": 4.0,
+   "mag_h": 2.4,
+   "magnets": false,
+   "pad_x": 0.0,
+   "pad_y": 0.0,
+   "screws": false,
+   "sd": 4.5
+  },
+  "volume_mm3": 14769.4,
+  "triangles": 29420,
+  "size_mm": [
+   167.5,
+   125.5,
+   4.65
+  ]
+ },
+ {
+  "code": "AE-WCFJS-5ZCVN",
+  "model": "bin",
+  "version": 1,
+  "params": {
+   "div_drop": 0.0,
+   "div_t": 1.2,
+   "floor_z": 7.0,
+   "gx": 2,
+   "gy": 1,
+   "gz": 3,
+   "label": true,
+   "label_w": 12.0,
+   "lip": true,
+   "lip_flat": 0.4,
+   "mag_d": 6.5,
+   "mag_h": 2.4,
+   "magnets": false,
+   "ndx": 2,
+   "ndy": 0,
+   "scoop": true,
+   "scoop_r": 10.0,
+   "screw_d": 3.0,
+   "screw_h": 6.0,
+   "screws": false,
+   "wall": 1.6
+  },
+  "volume_mm3": 38173.5,
+  "triangles": 30564,
+  "size_mm": [
+   83.5,
+   41.5,
+   25.0
+  ]
+ }
+]

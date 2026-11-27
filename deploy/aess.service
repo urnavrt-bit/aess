@@ -11,6 +11,7 @@ After=network-online.target
 WorkingDirectory=%h/aess
 ExecStart=/usr/bin/python3 %h/aess/server/app.py --host 0.0.0.0 --port 8000
 Environment=AESS_SOLIDCRAFT_CLI=%h/.local/bin/solidcraft-cli
+Environment=AESS_DATA=%h/aess-data
 Restart=always
 RestartSec=3
 
