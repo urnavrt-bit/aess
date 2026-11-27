@@ -66,6 +66,15 @@ worker.onmessage = ({ data }) => {
     p.reject(Object.assign(new Error(data.error || "skipped"), { skipped: !!data.skipped }));
   }
 };
+// If the worker itself fails (e.g. a script didn't load), fail every waiting build.
+function failAll(message) {
+  for (const p of pending.values()) p.reject(new Error(message));
+  pending.clear();
+  estimates.clear();
+}
+worker.onerror = (e) => { e.preventDefault?.(); failAll("the 3D engine failed to start"); };
+worker.onmessageerror = () => failAll("the 3D engine sent a broken reply");
+
 // Resolves with the mesh; `onEstimate` is called a little later with the print estimate.
 function work(msg, onEstimate = null) {
   const id = nextId++;
@@ -313,12 +322,20 @@ function onChange() {
 
 async function rebuild() {
   const seq = ++buildSeq, code = S.code, manifest = S.manifest, values = { ...S.values };
+  if (!(await S.engineReady)) {
+    if (seq === buildSeq) renderResult("error", "the 3D engine couldn't load");
+    return;
+  }
   try {
-    const r = await work({ type: "build", manifest, values, code }, (estimate) => {
+    const job = work({ type: "build", manifest, values, code }, (estimate) => {
       if (S.result?.code !== code) return;
       S.result.estimate = estimate;
       renderResult();
     });
+    // Never spin forever: a build that hasn't answered in 20 s is reported as failed.
+    let timer;
+    const timeout = new Promise((_, reject) => { timer = setTimeout(() => reject(new Error("the 3D engine isn't responding")), 20000); });
+    const r = await Promise.race([job, timeout]).finally(() => clearTimeout(timer));
     if (seq !== buildSeq) return; // a newer edit is on its way
     S.result = { ...r, code, manifest, values };
     viewer.showMesh(r.positions, r.indices);
@@ -353,7 +370,10 @@ function renderResult(state = "ready", error = "") {
   r.append(el("div", { class: "code-row" }, chip, share));
   r.append(el("div", { class: "build-msg" }, "This code is engraved under the part and saved inside the files. Type it in, or open the file here, to get this exact design back."));
   const ready = state === "ready" && S.result?.code === S.code;
-  if (state === "error") r.append(el("div", { class: "error-box" }, `This design couldn't be built: ${error}`));
+  if (state === "error") {
+    r.append(el("div", { class: "error-box" }, `This design couldn't be built: ${error}. `,
+      el("button", { class: "link-btn", onclick: () => location.reload() }, "Reload the page")));
+  }
   const dl = el("div", { class: "dl-row two" },
     el("button", { class: "btn primary", disabled: !ready, onclick: () => download("3mf"), title: "Best for slicers: Bambu Studio, PrusaSlicer, OrcaSlicer, Cura" },
       icon('<path d="M12 4v11"/><path d="M7 10l5 5 5-5"/><path d="M5 19h14"/>'), "Download 3MF"),
@@ -653,14 +673,21 @@ $("#stackBtn").addEventListener("click", () => {
 // ---------------------------------------------------------------- boot
 (async function boot() {
   try {
-    S.index = await (await fetch("models/index.json")).json();
+    S.index = await (await fetch("models/index.json", { cache: "no-cache" })).json();
   } catch {
     toast("Couldn't load the models. Please reload.", true);
     return;
   }
   const first = latestOf(LS.get("lastModel", "bin")) || latestOf("bin");
   codec = await import(`./models/${first.runtime.codec}`);
-  await work({ type: "prepare", manifest: first }).catch(() => {});
+  // Load the 3D engine. If it isn't ready in 15 s, say so (with a reload button) instead
+  // of spinning; if it turns up later after all, carry on as normal.
+  // The panel shows straight away; builds wait for the engine.
+  const prepared = work({ type: "prepare", manifest: first }).then(() => true, () => false);
+  S.engineReady = Promise.race([prepared, new Promise((r) => setTimeout(() => r(false), 15000))]);
+  S.engineReady.then((ok) => {
+    if (!ok) prepared.then((late) => { if (late) { S.engineReady = Promise.resolve(true); onChange(); } });
+  });
   // ?c=CODE share links
   const q = new URLSearchParams(location.search).get("c") || (location.hash.match(/c=([\w-]+)/) || [])[1];
   if (q) {

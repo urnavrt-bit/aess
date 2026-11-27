@@ -9,12 +9,37 @@ models/index.json  (generated) every manifest + the model registry
 404.html        -> sends unknown paths back to the generator
 """
 import argparse
+import hashlib
 import json
+import re
 import shutil
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 SHARED = ("_engine", "_lib", "_fonts", "_kit", "_codec")
+
+
+def stamp_versions(out: Path) -> str:
+    """Add ?v=<hash of the app files> to every reference between the app's own files.
+
+    Browsers may cache each file for a while (GitHub Pages: 10 minutes), so right after a
+    deploy they could otherwise mix old and new modules. With the stamp, one page load
+    always gets one consistent set. Model files need no stamp: published ones never change.
+    """
+    app_files = sorted(f for f in out.rglob("*") if f.is_file() and f.suffix in (".js", ".css", ".html"))
+    h = hashlib.sha256()
+    for f in app_files:
+        h.update(f.read_bytes())
+    v = h.hexdigest()[:10]
+    local = r'(\./(?:vendor/three/)?[\w./-]+?\.(?:js|css))'
+    for f in app_files:
+        text = f.read_text()
+        text = re.sub(r'(from\s+")' + local + '"', rf'\1\2?v={v}"', text)          # static imports
+        text = re.sub(r'(new URL\(")' + local + '"', rf'\1\2?v={v}"', text)        # worker URL
+        text = re.sub(r'((?:src|href)=")((?:app|files)\.(?:js|css)|app\.css)"', rf'\1\2?v={v}"', text)
+        text = text.replace('"./vendor/three/three.module.js"', f'"./vendor/three/three.module.js?v={v}"')
+        f.write_text(text)
+    return v
 
 REDIRECT_404 = """<!doctype html><meta charset="utf-8"><title>AESS</title>
 <script>
@@ -34,6 +59,7 @@ def main():
     if out.exists():
         shutil.rmtree(out)
     shutil.copytree(ROOT / "web", out)
+    version = stamp_versions(out)
 
     models_out = out / "models"
     models_out.mkdir()
@@ -58,7 +84,7 @@ def main():
     if args.cname:
         (out / "CNAME").write_text(args.cname + "\n")
     size = sum(f.stat().st_size for f in out.rglob("*") if f.is_file())
-    print(f"site built in {out} ({size / 1e6:.1f} MB, {len(manifests)} model versions)")
+    print(f"site built in {out} ({size / 1e6:.1f} MB, {len(manifests)} model versions, app version {version})")
 
 
 if __name__ == "__main__":
