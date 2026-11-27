@@ -31,7 +31,8 @@ Public generator: https://aess.billowapp.dev, a fully static site on GitHub Page
 
 ## Working on it
 - Site source is `web/`; `scripts/build_site.py` assembles `_site/` (web + browser model versions + a 404 page that sends visitors back to the generator). Preview locally: `python3 scripts/build_site.py && python3 scripts/serve.py`.
-- Tests: `python3 -m unittest discover -s tests` (locks) and `node --test tests/js/*.test.mjs` (models, codes, files).
+- Tests: `python3 -m unittest discover -s tests` (locks) and `node --test tests/js/*.test.mjs`. The Node suite enforces the hard rules for every browser model version: manifest well-formed and within the code format's limits (`tests/js/rules.test.mjs`), code engraved, files carry the design, model matches its SolidCraft reference, presets and random designs build, codes round-trip (`tests/js/models.test.mjs`). **Run both before finishing any change**; CI blocks the deploy if either fails. When adding a rule here, add a test for it.
+- `AGENTS.md` repeats the hard rules for non-Claude agents and points here; keep the two consistent.
 - New model version: copy the latest `models/<model>/v<N>` to `v<N+1>`, change it, add `reference.solidcraft` if a SolidCraft reference exists (`scripts/make_reference.py`), run the tests, then `scripts/lock_models.py --add` in the commit that publishes it.
 
 ## Environment
