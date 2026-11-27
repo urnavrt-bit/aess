@@ -51,6 +51,13 @@ def _bp3_rules(v):
     return on
 
 
+def _bp4_rules(v):
+    on = _bp3_rules(v)
+    sockets = (v["gy"] - 1) * (v["join_l"] + v["join_r"]) + (v["gx"] - 1) * (v["join_f"] + v["join_b"])
+    on["Key"] = on["KeyGrid"] = bool(v["keys"]) and v["floor_t"] == 0 and sockets > 0
+    return on
+
+
 REFERENCES = {
     "bin/v1": {"features": _bin, "engraved": True, "cases": [
         {}, {"gx": 1, "gy": 1, "gz": 3},
@@ -76,6 +83,20 @@ REFERENCES = {
         {"gx": 2, "gy": 4, "join_r": True, "join_b": True, "pad_x": 5, "pad_y": 2, "light": False},
         {"gx": 4, "gy": 2, "join_l": True, "join_f": True, "floor_t": 3, "magnets": True, "pad_x": 0},
         {"gx": 1, "gy": 3, "join_l": True, "join_r": True, "pad_y": 0},
+    ]},
+    "baseplate/v4": {"features": {
+        **_bp, "light": {"suppress_off": _win}, "keys": {},
+        "join_l": _join("l", ["SockL", "SockLGrid"]), "join_r": _join("r", ["SockR", "SockRGrid"]),
+        "join_f": _join("f", ["SockF", "SockFGrid"]), "join_b": _join("b", ["SockB", "SockBGrid"]),
+    }, "rules": _bp4_rules, "engraved": True, "cases": [
+        {}, {"gx": 4, "gy": 3, "pad_x": 0, "pad_y": 0, "light": False},
+        {"gx": 3, "gy": 2, "floor_t": 5, "magnets": True, "screws": True},
+        {"gx": 1, "gy": 1, "floor_t": 3.5, "magnets": True, "pad_x": 6, "pad_y": 0.5},
+        {"gx": 3, "gy": 3, "join_l": True, "join_r": True, "join_f": True, "join_b": True, "fit": 0.25},
+        {"gx": 2, "gy": 4, "join_r": True, "join_b": True, "pad_x": 5, "pad_y": 2, "light": False},
+        {"gx": 4, "gy": 2, "join_l": True, "join_f": True, "floor_t": 3, "magnets": True, "pad_x": 0, "keys": False},
+        {"gx": 1, "gy": 3, "join_l": True, "join_r": True, "pad_y": 0},
+        {"gx": 5, "gy": 5, "join_l": True, "join_r": True, "join_f": True, "join_b": True},
     ]},
     "lid/v1": {"features": {
         "stack": {"on": {"has_stack": "1"}, "off": {"has_stack": "0"},

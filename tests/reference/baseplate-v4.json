@@ -1,0 +1,143 @@
+{
+ "reference": "baseplate/v4",
+ "cases": [
+  {
+   "values": {},
+   "volume_mm3": 10310.9,
+   "size_mm": [
+    170.5,
+    128.5,
+    4.65
+   ]
+  },
+  {
+   "values": {
+    "gx": 4,
+    "gy": 3,
+    "pad_x": 0,
+    "pad_y": 0,
+    "light": false
+   },
+   "volume_mm3": 14768.25,
+   "size_mm": [
+    167.5,
+    125.5,
+    4.65
+   ]
+  },
+  {
+   "values": {
+    "gx": 3,
+    "gy": 2,
+    "floor_t": 5,
+    "magnets": true,
+    "screws": true
+   },
+   "volume_mm3": 58347.95,
+   "size_mm": [
+    128.5,
+    86.5,
+    9.65
+   ]
+  },
+  {
+   "values": {
+    "gx": 1,
+    "gy": 1,
+    "floor_t": 3.5,
+    "magnets": true,
+    "pad_x": 6,
+    "pad_y": 0.5
+   },
+   "volume_mm3": 9474.88,
+   "size_mm": [
+    53.5,
+    42.5,
+    8.15
+   ]
+  },
+  {
+   "values": {
+    "gx": 3,
+    "gy": 3,
+    "join_l": true,
+    "join_r": true,
+    "join_f": true,
+    "join_b": true,
+    "fit": 0.25
+   },
+   "volume_mm3": 6367.52,
+   "size_mm": [
+    126.0,
+    126.0,
+    4.65
+   ]
+  },
+  {
+   "values": {
+    "gx": 2,
+    "gy": 4,
+    "join_r": true,
+    "join_b": true,
+    "pad_x": 5,
+    "pad_y": 2,
+    "light": false
+   },
+   "volume_mm3": 14728.04,
+   "size_mm": [
+    88.75,
+    169.75,
+    4.65
+   ]
+  },
+  {
+   "values": {
+    "gx": 4,
+    "gy": 2,
+    "join_l": true,
+    "join_f": true,
+    "floor_t": 3,
+    "magnets": true,
+    "pad_x": 0,
+    "keys": false
+   },
+   "volume_mm3": 46198.92,
+   "size_mm": [
+    167.75,
+    85.25,
+    7.65
+   ]
+  },
+  {
+   "values": {
+    "gx": 1,
+    "gy": 3,
+    "join_l": true,
+    "join_r": true,
+    "pad_y": 0
+   },
+   "volume_mm3": 2076.65,
+   "size_mm": [
+    42.0,
+    125.5,
+    4.65
+   ]
+  },
+  {
+   "values": {
+    "gx": 5,
+    "gy": 5,
+    "join_l": true,
+    "join_r": true,
+    "join_f": true,
+    "join_b": true
+   },
+   "volume_mm3": 17649.65,
+   "size_mm": [
+    210.0,
+    210.0,
+    4.65
+   ]
+  }
+ ]
+}
