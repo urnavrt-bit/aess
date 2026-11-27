@@ -1,24 +1,50 @@
-name: CI
+name: Test & deploy
 
 on:
   push:
     branches: [main]
   pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pages-${{ github.ref }}
+  cancel-in-progress: false
 
 jobs:
   test:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        python: ["3.10", "3.12", "3.13"]
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
-          python-version: ${{ matrix.python }}
-      - name: Published model versions are unchanged
-        run: python scripts/lock_models.py
-      - name: Unit tests
+          python-version: "3.12"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Published files are unchanged and locked
         run: python -m unittest discover -s tests -v
-      - name: Manifests are valid JSON
-        run: for f in models/*/v*/manifest.json; do python -m json.tool "$f" > /dev/null; done
+      - name: Models build, match SolidCraft references, codes round-trip
+        run: node --test tests/js/*.test.mjs
+      - name: Build site
+        run: python scripts/build_site.py --out _site ${{ vars.PAGES_CNAME && format('--cname {0}', vars.PAGES_CNAME) || '' }}
+      - uses: actions/upload-pages-artifact@v3
+        if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+        with:
+          path: _site
+
+  deploy:
+    needs: test
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

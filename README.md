@@ -9,7 +9,7 @@ Gridfinity-compatible bins and baseplates, plus a web generator that turns your 
 
 [![CI](https://github.com/urnavrt-bit/aess/actions/workflows/ci.yml/badge.svg)](https://github.com/urnavrt-bit/aess/actions/workflows/ci.yml) [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
-<img src="docs/images/generator-bin.png" alt="The AESS generator showing a 2×1 bin with three compartments" width="900">
+<img src="docs/images/generator-bin.png" alt="The AESS generator showing a 3×2 bin built live in the browser" width="900">
 
 </div>
 
@@ -17,11 +17,12 @@ Gridfinity-compatible bins and baseplates, plus a web generator that turns your 
 
 ## Why AESS
 
-[Gridfinity](https://www.youtube.com/watch?v=ra_9zU-mnl8) made modular storage easy. AESS keeps the same interface, so everything interoperates, and focuses on three things:
+[Gridfinity](https://www.youtube.com/watch?v=ra_9zU-mnl8) made modular storage easy. AESS keeps the same interface, so everything interoperates, and focuses on four things:
 
 - **Toughness by default.** 1.6 mm walls (up to 2.5 mm), a 2.25 mm floor, a rounded inside corner where walls meet the floor, and a stacking lip with a flat top instead of a knife edge that chips. Every overhang is 45° or less, so nothing needs supports.
-- **Fully parametric.** Size, walls, floor, lip, dividers, label shelf, scoop, magnets and screws are all settings, checked against each other so you can't generate something that won't print or fit.
-- **Designs you can get back.** Every generated part gets a config code such as `AE-WCFJS-5ZCVN`, **engraved on its underside**. Type the code into the generator, even years and many releases later, and you get exactly the same part.
+- **Fully parametric, instantly.** Size, walls, floor, lip, dividers, label shelf, scoop, magnets and screws are all settings, checked against each other. The exact model is built **in your browser** as you drag a slider (usually in under half a second), with no account and no server.
+- **Designs you can get back.** Every design has a config code such as `AE2-11073-8`. The code itself holds the model, its version and your settings, it is **engraved on the part's underside**, and typing it in, even years and many releases later, gives you exactly the same part.
+- **Files that remember.** Every 3MF carries its full configuration (and a thumbnail for your slicer); every STL carries the code. Drop a file back onto the generator to edit the design.
 
 ## What's in the system
 
@@ -36,9 +37,9 @@ Bins stack on each other the same way they sit in a baseplate, and work with any
 ## Using the generator
 
 1. Pick **Bin** or **Baseplate**, or start from a preset (*Small parts*, *Heavy tools*, *Kitchen drawer*, *Desk tray*, *Bathroom*…).
-2. Adjust settings; the 3D view shows a live sketch with the outside size, inside size and compartment size.
-3. **Generate**: the exact model is built on the server (about 5–40 s) and replaces the sketch.
-4. Download **3MF** (slicers), **STL**, or **STEP** (CAD). Keep the code, or copy the share link (`/c/<code>`).
+2. Adjust settings. The 3D view is the exact model, rebuilt as you go, with the outside, inside and compartment sizes. Every changed setting can be reset on its own.
+3. Download **3MF** (slicers; includes the design data and a thumbnail) or **STL**.
+4. Keep the code or the file, or copy the share link (`aess.billowapp.dev/?c=<code>`). Open a code with the box at the top, or drop a file anywhere on the page.
 
 <details>
 <summary>Phone layout</summary>
@@ -52,70 +53,48 @@ PETG or ASA for toughness (PLA is fine indoors) · 0.2 mm layers · 3–4 perime
 ## How it works
 
 ```
-browser ──► server/app.py ──► solidcraft-cli run <script> --in models/<model>/v<N>/model.sc
-  UI + API     (stdlib Python)      parametric B-rep model ──► STL · 3MF · STEP
-                │
-                └── data/codes.sqlite   code → model, version, every parameter value
+ design & verify                         publish                           use (all in the browser)
+ SolidCraft reference model ──┐   models/<model>/v<N>/model.js ──► Manifold (WebAssembly) ──► 3MF · STL
+   (exact B-rep, by hand)     └──► tests compare volume & size       + frozen kit, font, code format
 ```
 
-- **Models** are parametric [SolidCraft](https://solidcraft.io) designs in `models/<model>/v<N>/`. Each version has a `manifest.json` describing every parameter (range, step, default, help text), how it maps to the model (parameter changes, feature suppression), cross-checks between parameters, presets, and which text parameters receive the engraved code.
-- **The server** (`server/app.py`, Python standard library only) serves the single-page UI and a small JSON API, validates every value against the manifest, stores configs under their code, and builds them with `solidcraft-cli` in a bounded worker queue. Builds are cached by code.
-- **Config codes** are a hash of the canonical config (model + version + every parameter). The same design always gets the same code. A code is pinned to its model version, so later versions never change it; the UI offers to *open it in the latest version* as an explicit choice.
-- **Published model versions are immutable.** `models/LOCK.json` records their checksums and the test suite fails if one changes. A change of any size goes into a new version.
-
-### API
-
-| Method & path | |
-|---|---|
-| `GET /api/models` | Every model version's manifest |
-| `POST /api/configs` `{model, version?, params}` | Validate and store a config; returns its code |
-| `GET /api/configs/<code>` | The stored config and its build status |
-| `GET /api/configs/<code>/upgrade` | The config's values carried over to the latest model version |
-| `POST /api/build/<code>` · `GET /api/build/<code>` | Queue a build / poll it |
-| `GET /files/<code>/model.{stl,3mf,step}` | Built files (`?download` for a named attachment) |
+- **Models** are small JavaScript programs (`models/<model>/v<N>/model.js`) built on a shared geometry kit. Gridfinity's profiles are rounded rectangles that grow or shrink with height, so the kit's core is a rounded-rectangle loft, faceted to within **0.005 mm** of the true curve. [Manifold](https://github.com/elalish/manifold) does the solid booleans in WebAssembly, in a Web Worker.
+- **[SolidCraft](https://solidcraft.io) is the design and reference tool.** Each browser model names a SolidCraft reference model; `scripts/make_reference.py` builds a spread of designs with it, and CI checks the browser model against them. They agree to within 0.01% in volume and exactly in size.
+- **Config codes** pack the model id, version and every changed value (plus a checksum against typos) into a short base32 string. No database: the code is the design.
+- **Nothing published ever changes.** Each model version pins the exact engine, font, geometry kit and code format it was built with, and `models/LOCK.json` locks all of them; CI fails if a locked file changes. Improvements go into new versions, and old codes keep building their original part. The site may offer to open a design in a newer version, but only when you choose to.
+- **Version 1 designs** were made with the earlier SolidCraft server. Their codes (`AE-XXXXX-XXXXX`) still open, with their original STL, 3MF and STEP files kept in `legacy/`.
 
 ## Running it yourself
 
-Requirements: Linux or macOS, Python 3.10+, and the [SolidCraft](https://solidcraft.io/download/) CLI (`solidcraft-cli`) on `PATH` or in `AESS_SOLIDCRAFT_CLI`.
+It's a static site; any web server works.
 
 ```bash
 git clone https://github.com/urnavrt-bit/aess.git && cd aess
-python3 server/app.py --port 8000        # http://localhost:8000
-python3 -m unittest discover -s tests    # tests (SolidCraft not needed)
+python3 scripts/build_site.py                 # assembles _site/
+python3 scripts/serve.py                      # http://localhost:8000
+python3 -m unittest discover -s tests         # published files are unchanged
+node --test tests/js/*.test.mjs               # models, references, codes, files (Node 20+)
 ```
 
-To run it as a service, see [`deploy/aess.service`](deploy/aess.service). In production the service runs from its own checkout (`~/aess`, data in `~/aess-data`); `scripts/deploy.sh` checks the model lock, runs the tests, updates that checkout to the committed `main`, restarts the service and pre-builds every preset. Configuration is done with environment variables:
-
-| Variable | Default | |
-|---|---|---|
-| `AESS_SOLIDCRAFT_CLI` | `solidcraft-cli` on PATH | CLI used for builds |
-| `AESS_DATA` | `./data` | Code database and build cache. **Back up `codes.sqlite`.** |
-| `AESS_WORKERS` | `2` | Parallel builds |
-| `AESS_MAX_QUEUE` | `40` | Queue length before new builds are refused |
-| `AESS_BUILDS_PER_HOUR` | `60` | Uncached builds per client IP per hour |
-| `AESS_BUILD_TIMEOUT` | `600` | Seconds before a build is abandoned |
-
-Without the website you can make quick size variants from the command line. Toggles keep the state the model file was saved in, and the engraved code is a placeholder:
-
-```bash
-solidcraft-cli run --in models/bin/v1/model.sc --param gx=3 --param gy=2 --param gz=6 --out bin.3mf
-```
+Pushing to `main` runs the tests and deploys to GitHub Pages (`.github/workflows/ci.yml`). To serve on a custom domain, set the repository variable `PAGES_CNAME`.
 
 ## Repository layout
 
 ```
-models/<model>/v<N>/   model.sc + manifest.json (immutable once published), LOCK.json checksums
-server/                app.py (backend) and static/ (frontend, three.js vendored)
-scripts/               lock_models.py: lock / verify published model versions
-tests/                 backend unit tests
-deploy/                systemd unit
-docs/images/           screenshots
+web/                    the generator (app, build worker, file reader/writer, three.js)
+models/<model>/v<N>/    manifest.json + model.js (browser) or model.sc (SolidCraft reference / v1)
+models/_engine|_lib|_fonts|_kit|_codec/   frozen dependencies, one folder per version
+models/registry.json    model ids used in codes (append-only) · models/LOCK.json checksums
+legacy/<code>/          version 1 designs: config + original files
+scripts/                build_site, lock_models, make_reference, export_legacy
+tests/                  lock tests · tests/js model, code and file tests · tests/reference SolidCraft numbers
+docs/images/            screenshots
 ```
 
 ## Contributing
 
-Ideas, bug reports and new models are welcome. Read [CONTRIBUTING.md](CONTRIBUTING.md) first; in short: never edit a published model version, and every model must engrave its config code.
+Ideas, bug reports and new models are welcome. Read [CONTRIBUTING.md](CONTRIBUTING.md) first; in short: never edit anything published, and every model must engrave its code and carry its design in its files.
 
 ## License
 
-[MIT](LICENSE). Gridfinity is an open design by Zack Freedman; AESS is an independent, compatible project. three.js is MIT-licensed (`server/static/vendor/three/LICENSE`).
+[MIT](LICENSE). Gridfinity is an open design by Zack Freedman; AESS is an independent, compatible project. Bundled: three.js (MIT), Manifold (Apache-2.0), opentype.js (MIT), Atkinson Hyperlegible (SIL OFL 1.1); licences are next to each in `web/vendor/` and `models/_*/`.

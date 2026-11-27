@@ -26,3 +26,7 @@ venv/
 
 # SolidCraft backups
 *.bak
+
+# built site
+_site/
+node_modules/

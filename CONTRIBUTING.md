@@ -1,50 +1,53 @@
 # Contributing to AESS
 
-Thanks for helping! A few rules keep every config code working forever.
+Thanks for helping! A few rules keep every config code and every file working forever.
 
 ## The golden rules
 
-1. **Never edit a published model version.** Anything under `models/<model>/v<N>/` that is listed in `models/LOCK.json` is frozen, because config codes point at it. `python3 -m unittest discover -s tests` fails if a locked file changes.
-2. **Changes go in a new version.** Copy `v<N>` to `v<N+1>`, make the change, bump `version` in the manifest, then run `python3 scripts/lock_models.py --add` once the version is released.
-3. **Never reinterpret a parameter** inside a version. A new version may rename or drop parameters; the server carries matching ones over when someone opens an old code in the new version.
-4. **Every model engraves its config code** on a face that prints cleanly (usually the underside), through text parameters listed in the manifest's `engrave_code`.
+1. **Never edit anything published.** Model versions (`models/<model>/v<N>/`) and their frozen dependencies (`models/_engine`, `_lib`, `_fonts`, `_kit`, `_codec`) are locked in `models/LOCK.json`, because codes and files in the wild point at them. The tests fail if a locked file changes.
+2. **Changes go in new folders.** A model change means `v<N+1>`. A kit, font, engine or code-format change means a new folder (`_kit/k2`, …) that only new model versions use.
+3. **Never reinterpret a parameter** inside a version. A new version may rename or drop parameters; when someone opens an old design in the new version, matching parameters are carried over.
+4. **Every model engraves its config code** on a face that prints cleanly (usually the underside), and its files carry the design (the 3MF config, the STL header code).
 5. **Stay Gridfinity-compatible**: 42 mm pitch, 7 mm height units, standard base and lip profile. Toughness comes from parameters, not from changing the interface.
+6. **Print quality:** curves within 0.005 mm of the true shape (the kit does this for you).
 
 ## Adding or changing a model
 
-Models are built in [SolidCraft](https://solidcraft.io) (desktop app, CLI, or its MCP server for AI agents).
-
-- Drive every size from named parameters (expressions such as `pitch*gx - gap`), never fixed numbers.
-- Name every feature. Toggles work by suppressing features, so each optional feature (and its patterns) needs a stable name.
-- Pattern counts must be ≥ 1. A count that can be 0 uses `zero_suppress` in the manifest (the server sets the count to 1 and suppresses the features).
-- Verify each stage: compare measured volume and bounding box with numbers you worked out, then check several extreme parameter combinations (`solidcraft-cli eval` or the MCP `check_parameters`).
+1. Design or update the shape in [SolidCraft](https://solidcraft.io) (desktop app, CLI or its MCP server for AI agents): drive every size from named parameters and name every feature. This is the reference.
+2. Copy the latest `models/<model>/v<N>` to `v<N+1>` and update `model.js` (and `manifest.json`). `build(M, ctx, values, code)` returns a Manifold solid; use the kit (`rrLoft`, `rrPrism`, `textBlock`, `undersideText`…).
+3. Point `reference.solidcraft` at the SolidCraft model and run `scripts/make_reference.py` (needs `solidcraft-cli`) to record reference numbers.
+4. `node --test tests/js/*.test.mjs`: the model must match its reference, every preset and a few dozen random valid designs must build as solids, and codes must round-trip.
+5. Preview with `python3 scripts/build_site.py && python3 scripts/serve.py`.
+6. In the commit that publishes it, run `python3 scripts/lock_models.py --add`. New models also get the next id appended to `models/registry.json`.
 
 ### Manifest reference
 
 ```jsonc
 {
-  "model": "bin", "version": 2, "title": "...", "summary": "...",
-  "solidcraft_version": "0.50.0",          // build used to publish this version
-  "body": "Bin",
-  "engrave_code": {"code1": "head", "code2": "tail"},   // text params ← full | head | tail
+  "model": "bin", "version": 3, "title": "...", "summary": "...",
+  "engine": "browser",
+  "runtime": {                                   // frozen folders this version builds with
+    "manifold": "_engine/manifold-3.5.5/manifold.js", "opentype": "_lib/opentype-1.3.4/opentype.module.js",
+    "font": "_fonts/atkinson-hyperlegible-bold/font.ttf", "kit": "_kit/k1/kit.js",
+    "codec": "_codec/c1/codec.js", "entry": "model.js"
+  },
+  "reference": {"solidcraft": "bin/v1"},         // SolidCraft model it is checked against
+  "formats": ["3mf", "stl"],
   "groups": [{"id": "size", "title": "Size", "help": "..."}],
   "params": [
     {"id": "gx", "group": "size", "label": "Width", "type": "int", "unit": "units",
-     "min": 1, "max": 8, "step": 1, "default": 2, "set": "gx", "help": "..."},
-    {"id": "magnets", "type": "bool", "default": false,
-     "on": {"set": {...}, "suppress": [...]}, "off": {"suppress": ["MagnetHoles"]}},
-    {"id": "ndx", "type": "int", "set": "ndx", "zero_suppress": ["DividerX", "DividersX"]},
-    {"id": "label_w", "requires": "label", ...}             // greyed out unless label is on
+     "min": 1, "max": 8, "step": 1, "default": 2, "help": "..."},
+    {"id": "magnets", "group": "base", "label": "Magnet holes", "type": "bool", "default": false, "help": "..."},
+    {"id": "mag_d", "requires": "magnets", ...}            // greyed out unless magnets is on
   ],
   "checks": [{"expr": "not screws or screw_h <= floor_z - 1", "message": "..."}],
   "presets": [{"name": "Small parts", "help": "...", "values": {...}}]
 }
 ```
 
-`checks` use a tiny, sandboxed expression language (numbers, parameter names, `+ - * /`, comparisons, `and`/`or`/`not`). They run both in the browser and on the server.
+A version's `params` order is part of its codes; that's one more reason published manifests never change. A new version may order its parameters freely. `checks` use a tiny expression language (numbers, parameter names, `+ - * /`, comparisons, `and`/`or`/`not`).
 
 ## Code style & tests
 
-- Server: Python standard library only, no external dependencies.
-- Frontend: plain ES modules, no build step; three.js is vendored under `server/static/vendor/three/`.
-- Run `python3 -m unittest discover -s tests` before opening a pull request.
+- No build step: plain ES modules; dependencies are vendored.
+- `python3 -m unittest discover -s tests` and `node --test tests/js/*.test.mjs` must pass before a pull request.
