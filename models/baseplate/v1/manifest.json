@@ -1,0 +1,233 @@
+{
+  "model": "baseplate",
+  "version": 1,
+  "title": "Baseplate",
+  "summary": "The grid that bins lock into. Glue or screw it into a drawer, onto a shelf or a wall, and bins drop in and stay put.",
+  "solidcraft_version": "0.50.0",
+  "released": "2026-11-27",
+  "body": "Baseplate",
+  "engrave_code": {
+    "code_text": "full"
+  },
+  "groups": [
+    {
+      "id": "size",
+      "title": "Size",
+      "help": "Number of 42 mm grid squares. Use 'Fit to drawer' to work this out from a drawer's inside size."
+    },
+    {
+      "id": "edge",
+      "title": "Edge & fit",
+      "help": "Padding adds a solid border, both to fill leftover space in a drawer and to make the outer edge stronger."
+    },
+    {
+      "id": "floor",
+      "title": "Floor & mounting",
+      "help": "Floor thickness 0 gives a light, open frame (fastest to print). A solid floor is needed for magnets and screw holes."
+    }
+  ],
+  "params": [
+    {
+      "id": "gx",
+      "group": "size",
+      "label": "Width",
+      "type": "int",
+      "unit": "units",
+      "min": 1,
+      "max": 10,
+      "step": 1,
+      "default": 4,
+      "set": "gx",
+      "help": "Grid squares along the width (42 mm each)."
+    },
+    {
+      "id": "gy",
+      "group": "size",
+      "label": "Depth",
+      "type": "int",
+      "unit": "units",
+      "min": 1,
+      "max": 10,
+      "step": 1,
+      "default": 3,
+      "set": "gy",
+      "help": "Grid squares along the depth (42 mm each)."
+    },
+    {
+      "id": "pad_x",
+      "group": "edge",
+      "label": "Side padding",
+      "type": "float",
+      "unit": "mm",
+      "min": 0,
+      "max": 40,
+      "step": 0.25,
+      "default": 1.5,
+      "set": "pad_x",
+      "help": "Solid border added to the left and right (each side). 1.5 mm or more gives a strong outer rim."
+    },
+    {
+      "id": "pad_y",
+      "group": "edge",
+      "label": "Front/back padding",
+      "type": "float",
+      "unit": "mm",
+      "min": 0,
+      "max": 40,
+      "step": 0.25,
+      "default": 1.5,
+      "set": "pad_y",
+      "help": "Solid border added to the front and back (each side)."
+    },
+    {
+      "id": "floor_t",
+      "group": "floor",
+      "label": "Floor thickness",
+      "type": "float",
+      "unit": "mm",
+      "min": 0,
+      "max": 10,
+      "step": 0.25,
+      "default": 0,
+      "set": "floor_t",
+      "help": "0 = open frame. 3 mm or more allows magnet holes; 4 mm or more suits countersunk screws."
+    },
+    {
+      "id": "magnets",
+      "group": "floor",
+      "label": "Magnet holes",
+      "type": "bool",
+      "default": false,
+      "off": {
+        "suppress": [
+          "BpMagnetHoles",
+          "BpMagnetGrid"
+        ]
+      },
+      "help": "Four magnet pockets per square, lined up with the magnet holes in bins."
+    },
+    {
+      "id": "mag_d",
+      "group": "floor",
+      "label": "Magnet diameter",
+      "type": "float",
+      "unit": "mm",
+      "min": 4,
+      "max": 8.5,
+      "step": 0.05,
+      "default": 6.5,
+      "set": "mag_d",
+      "requires": "magnets",
+      "help": "6.5 mm fits 6 x 2 mm magnets with glue clearance."
+    },
+    {
+      "id": "mag_h",
+      "group": "floor",
+      "label": "Magnet depth",
+      "type": "float",
+      "unit": "mm",
+      "min": 1,
+      "max": 3.5,
+      "step": 0.05,
+      "default": 2.4,
+      "set": "mag_h",
+      "requires": "magnets",
+      "help": "Pocket depth from the top of the floor."
+    },
+    {
+      "id": "screws",
+      "group": "floor",
+      "label": "Mounting screw holes",
+      "type": "bool",
+      "default": false,
+      "off": {
+        "suppress": [
+          "BpCountersink",
+          "BpScrewHole",
+          "BpScrewGrid"
+        ]
+      },
+      "help": "One countersunk hole in the middle of each square for screwing the plate down."
+    },
+    {
+      "id": "sd",
+      "group": "floor",
+      "label": "Screw clearance",
+      "type": "float",
+      "unit": "mm",
+      "min": 3,
+      "max": 6,
+      "step": 0.1,
+      "default": 4.5,
+      "set": "sd",
+      "requires": "screws",
+      "help": "Hole diameter. 4.5 mm suits #8 or M4 wood screws, 3.5 mm suits M3."
+    },
+    {
+      "id": "cs_d",
+      "group": "floor",
+      "label": "Countersink diameter",
+      "type": "float",
+      "unit": "mm",
+      "min": 6,
+      "max": 11,
+      "step": 0.1,
+      "default": 9,
+      "set": "cs_d",
+      "requires": "screws",
+      "help": "Width of the 90° countersink at the top of the floor, for flat-head screws."
+    }
+  ],
+  "checks": [
+    {
+      "expr": "not magnets or floor_t >= mag_h + 0.6",
+      "message": "Magnet holes need a floor at least 0.6 mm thicker than the magnet depth."
+    },
+    {
+      "expr": "not screws or floor_t >= (cs_d - sd)/2 + 1",
+      "message": "The floor is too thin for the countersink: thicken the floor or reduce the countersink."
+    },
+    {
+      "expr": "not screws or cs_d > sd + 0.5",
+      "message": "The countersink must be wider than the screw hole."
+    },
+    {
+      "expr": "gx*42 + 2*pad_x <= 430 and gy*42 + 2*pad_y <= 430",
+      "message": "Plates over 430 mm won't fit any common printer bed."
+    }
+  ],
+  "presets": [
+    {
+      "name": "Drawer liner",
+      "help": "Light open frame, glue or tape it in",
+      "values": {
+        "gx": 4,
+        "gy": 3,
+        "floor_t": 0,
+        "pad_x": 1.5,
+        "pad_y": 1.5
+      }
+    },
+    {
+      "name": "Magnetic",
+      "help": "Bins snap down onto magnets",
+      "values": {
+        "gx": 4,
+        "gy": 3,
+        "floor_t": 3.5,
+        "magnets": true
+      }
+    },
+    {
+      "name": "Wall / shelf mount",
+      "help": "Screw it to a wall or shelf",
+      "values": {
+        "gx": 3,
+        "gy": 3,
+        "floor_t": 5,
+        "screws": true,
+        "magnets": true
+      }
+    }
+  ]
+}

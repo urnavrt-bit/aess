@@ -1,0 +1,10 @@
+{
+  "baseplate/v1": {
+    "manifest.json": "3941091a44b47d57131ddb1d5e6e401e3d419de5ad230eb01f28dd08fc248db2",
+    "model.sc": "3d1ca97580b1c5617c14f4f37460e48a8511af74301d2e9584a084236307a82a"
+  },
+  "bin/v1": {
+    "manifest.json": "234f073386fef715e6f0b94cd6d8ba48cc432ef9a1cd13d290d2732239d6c220",
+    "model.sc": "3209ad58113719fcd746379b22f9aca94988b0e1689773291858be1cc38c270f"
+  }
+}

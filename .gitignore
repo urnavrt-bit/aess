@@ -1,0 +1,28 @@
+# runtime data: config-code database + build cache (back up data/codes.sqlite separately!)
+data/
+
+# ad-hoc outputs
+exports/
+renders/
+*.stl
+*.3mf
+*.step
+!docs/**
+
+# python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# editors / OS
+.DS_Store
+.idea/
+.vscode/
+*.swp
+
+# local Claude Code settings
+.claude/settings.local.json
+
+# SolidCraft backups
+*.bak
