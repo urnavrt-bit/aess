@@ -50,15 +50,26 @@ const latestOf = (model) => manifests().filter((m) => m.model === model && m.eng
 // ---------------------------------------------------------------- build worker
 const worker = new Worker(new URL("./worker.js", import.meta.url), { type: "module" });
 let nextId = 1;
-const pending = new Map();
+const pending = new Map(), estimates = new Map();
 worker.onmessage = ({ data }) => {
+  if ("estimate" in data) {
+    estimates.get(data.id)?.(data.estimate);
+    estimates.delete(data.id);
+    return;
+  }
   const p = pending.get(data.id);
   if (!p) return;
   pending.delete(data.id);
-  data.ok ? p.resolve(data.result) : p.reject(new Error(data.error));
+  if (data.ok) p.resolve(data.result);
+  else {
+    estimates.delete(data.id);
+    p.reject(Object.assign(new Error(data.error || "skipped"), { skipped: !!data.skipped }));
+  }
 };
-function work(msg) {
+// Resolves with the mesh; `onEstimate` is called a little later with the print estimate.
+function work(msg, onEstimate = null) {
   const id = nextId++;
+  if (onEstimate) estimates.set(id, onEstimate);
   return new Promise((resolve, reject) => { pending.set(id, { resolve, reject }); worker.postMessage({ ...msg, id }); });
 }
 
@@ -303,13 +314,17 @@ function onChange() {
 async function rebuild() {
   const seq = ++buildSeq, code = S.code, manifest = S.manifest, values = { ...S.values };
   try {
-    const r = await work({ type: "build", manifest, values, code });
+    const r = await work({ type: "build", manifest, values, code }, (estimate) => {
+      if (S.result?.code !== code) return;
+      S.result.estimate = estimate;
+      renderResult();
+    });
     if (seq !== buildSeq) return; // a newer edit is on its way
     S.result = { ...r, code, manifest, values };
     viewer.showMesh(r.positions, r.indices);
     renderResult();
   } catch (e) {
-    if (seq !== buildSeq) return;
+    if (seq !== buildSeq || e.skipped) return;
     S.result = null;
     renderResult("error", e.message);
   }
@@ -323,7 +338,6 @@ function setUrl(code) {
 }
 
 // ---------------------------------------------------------------- result panel
-const DENS = { PETG: 1.27 };
 function renderResult(state = "ready", error = "") {
   const r = $("#result");
   r.innerHTML = "";
@@ -346,10 +360,12 @@ function renderResult(state = "ready", error = "") {
     el("button", { class: "btn", disabled: !ready, onclick: () => download("stl"), title: "Works with any slicer" }, "STL"));
   r.append(dl);
   if (ready) {
-    const vol = S.result.volume / 1000;
+    const est = S.result.estimate;
+    const how = "Estimated like a slicer would print it: PETG, 0.2 mm layers, 3 walls, 4 top/bottom layers, 15% infill. Your slicer may differ by about 10%.";
     r.append(el("div", { class: "stats" },
-      el("div", { class: "stat" }, el("b", {}, `${Math.round(vol * DENS.PETG)} g`), el("span", {}, "PETG, solid")),
-      el("div", { class: "stat" }, el("b", {}, `${fmt(vol)} cm³`), el("span", {}, "volume")),
+      el("div", { class: "stat", title: est ? `${how} Printed 100% solid it would be ${Math.round(est.solidGrams)} g.` : how },
+        el("b", {}, est ? `≈ ${Math.round(est.grams)} g` : "…"), el("span", {}, "filament (PETG)")),
+      el("div", { class: "stat", title: how }, el("b", {}, est ? `≈ ${fmt(est.meters)} m` : "…"), el("span", {}, "of 1.75 mm")),
       el("div", { class: "stat" }, el("b", {}, `${Math.max(1, Math.round(S.result.ms))} ms`), el("span", {}, "build time"))));
   } else if (state === "building") {
     r.append(el("div", { class: "progress" }, el("i")));
@@ -371,7 +387,7 @@ function designName(m, v) {
 }
 
 async function download(kind) {
-  const { positions, indices, code, manifest, values, volume } = S.result;
+  const { positions, indices, code, manifest, values, estimate } = S.result;
   const name = `aess-${designName(manifest, values)}-${code}.${kind}`;
   const config = {
     aess: 1, code, model: manifest.model, version: manifest.version, params: values,
@@ -385,7 +401,8 @@ async function download(kind) {
     const thumbnail = await viewer.thumbnail();
     const description = `${manifest.title} v${manifest.version}. ` +
       manifest.params.map((p) => `${p.label}: ${fmtValue(p, values[p.id])}`).join("; ") +
-      `. Volume ${fmt(volume / 1000)} cm³. Reopen or edit: ${config.generator}`;
+      (estimate ? `. About ${Math.round(estimate.grams)} g of PETG (0.2 mm layers, 3 walls, 15% infill)` : "") +
+      `. Reopen or edit: ${config.generator}`;
     blob = await write3MF(positions, indices, { config, title, description, thumbnail });
   }
   const a = el("a", { href: URL.createObjectURL(blob), download: name });

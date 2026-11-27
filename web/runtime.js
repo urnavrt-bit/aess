@@ -1,3 +1,5 @@
+import { estimatePrint } from "./estimate.js";
+
 // Loads a browser-built model version (engine, font, kit and model are the frozen
 // files its manifest names) and builds it. Runs in a Web Worker and in Node tests.
 
@@ -71,8 +73,9 @@ export function createRuntime({ modelsBase, fetchBytes }) {
     async codec(manifest) {
       return once("codec:" + manifest.runtime.codec, () => import(url(manifest.runtime.codec)));
     },
-    // Build a design; returns plain arrays (safe to post between threads).
-    async build(manifest, values, code, { noEngrave = false } = {}) {
+    // Build a design; returns plain arrays (safe to post between threads). With `onMesh`,
+    // the mesh is handed over as soon as it exists and a print estimate is added after.
+    async build(manifest, values, code, { noEngrave = false, onMesh = null, shouldEstimate = () => true } = {}) {
       const [{ wasm, cleanup }, f, mod] = await Promise.all([engine(manifest.runtime.manifold), font(manifest), module(manifest)]);
       const t0 = performance.now();
       try {
@@ -86,11 +89,15 @@ export function createRuntime({ modelsBase, fetchBytes }) {
           positions[i * 3 + 1] = mesh.vertProperties[i * mesh.numProp + 1];
           positions[i * 3 + 2] = mesh.vertProperties[i * mesh.numProp + 2];
         }
-        return {
+        const result = {
           positions, indices: new Uint32Array(mesh.triVerts),
           volume: solid.volume(), genus: solid.genus(), triangles: mesh.numTri,
           bbox: { min: [...bb.min], max: [...bb.max] }, ms: performance.now() - t0,
         };
+        if (!onMesh) return result;
+        onMesh(result);
+        await new Promise((r) => setTimeout(r, 0)); // let newer requests arrive first
+        return shouldEstimate() ? { estimate: estimatePrint(solid) } : {};
       } finally {
         cleanup();
       }
