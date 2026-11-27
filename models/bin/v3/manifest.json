@@ -1,0 +1,401 @@
+{
+  "model": "bin",
+  "version": 3,
+  "title": "Storage bin",
+  "summary": "A tough, stackable, Gridfinity-compatible bin with optional dividers, label shelf, scoop and magnet or screw holes.",
+  "released": "2026-11-27",
+  "engine": "browser",
+  "runtime": {
+    "manifold": "_engine/manifold-3.5.5/manifold.js",
+    "opentype": "_lib/opentype-1.3.4/opentype.module.js",
+    "font": "_fonts/atkinson-hyperlegible-bold/font.ttf",
+    "kit": "_kit/k1/kit.js",
+    "codec": "_codec/c1/codec.js",
+    "entry": "model.js"
+  },
+  "reference": {
+    "solidcraft": "bin/v3"
+  },
+  "formats": [
+    "3mf",
+    "stl"
+  ],
+  "groups": [
+    {
+      "id": "size",
+      "title": "Size",
+      "help": "Bins are measured in grid units. One unit is 42 mm wide and deep; height is counted in 7 mm units (a 3-unit bin is 21 mm tall plus the stacking lip)."
+    },
+    {
+      "id": "strength",
+      "title": "Strength",
+      "help": "Thicker walls and floors make the bin stiffer and harder to crack, at the cost of a little interior space and filament."
+    },
+    {
+      "id": "stacking",
+      "title": "Stacking",
+      "help": "The stacking lip lets another bin sit on top of this one exactly as it sits in a baseplate."
+    },
+    {
+      "id": "inside",
+      "title": "Compartments",
+      "help": "Split the bin into equal compartments and add a label shelf or a finger scoop."
+    },
+    {
+      "id": "base",
+      "title": "Base",
+      "help": "Holes under each foot for magnets (to hold the bin on a steel or magnetic baseplate) or screws (to fix it in place)."
+    }
+  ],
+  "params": [
+    {
+      "id": "gx",
+      "group": "size",
+      "label": "Width",
+      "type": "int",
+      "unit": "units",
+      "min": 1,
+      "max": 8,
+      "step": 1,
+      "default": 2,
+      "help": "Width along the front, in 42 mm grid units."
+    },
+    {
+      "id": "gy",
+      "group": "size",
+      "label": "Depth",
+      "type": "int",
+      "unit": "units",
+      "min": 1,
+      "max": 8,
+      "step": 1,
+      "default": 1,
+      "help": "Depth front to back, in 42 mm grid units."
+    },
+    {
+      "id": "gz",
+      "group": "size",
+      "label": "Height",
+      "type": "int",
+      "unit": "units",
+      "min": 2,
+      "max": 16,
+      "step": 1,
+      "default": 3,
+      "help": "Height in 7 mm units, measured to the top of the wall. The stacking lip adds about 4 mm."
+    },
+    {
+      "id": "wall",
+      "group": "strength",
+      "label": "Wall thickness",
+      "type": "float",
+      "unit": "mm",
+      "min": 1.2,
+      "max": 2.5,
+      "step": 0.05,
+      "default": 1.6,
+      "help": "1.2 mm is light and roomy, 1.6 mm is the tough default, 2.0 mm and up is for heavy tools and rough handling. Use a multiple of your line width (e.g. 1.6 = 4 x 0.4 mm)."
+    },
+    {
+      "id": "floor_z",
+      "group": "strength",
+      "label": "Floor height",
+      "type": "float",
+      "unit": "mm",
+      "min": 6,
+      "max": 14,
+      "step": 0.25,
+      "default": 7,
+      "help": "Height of the inside floor above the table. The solid floor is this minus 4.75 mm (the feet). 7 mm gives a 2.25 mm floor."
+    },
+    {
+      "id": "lip",
+      "group": "stacking",
+      "label": "Stacking lip",
+      "type": "bool",
+      "default": true,
+      "help": "Keep it on to stack bins. Turn it off for a flat-topped bin that fits under a low drawer or shelf."
+    },
+    {
+      "id": "lip_flat",
+      "group": "stacking",
+      "label": "Lip top flat",
+      "type": "float",
+      "unit": "mm",
+      "min": 0.2,
+      "max": 1.0,
+      "step": 0.05,
+      "default": 0.4,
+      "requires": "lip",
+      "help": "Blunts the sharp top edge of the lip so it doesn't chip. Stacking still works across the whole range."
+    },
+    {
+      "id": "ndx",
+      "group": "inside",
+      "label": "Dividers across",
+      "type": "int",
+      "unit": "",
+      "min": 0,
+      "max": 9,
+      "step": 1,
+      "default": 0,
+      "help": "Number of walls running front to back, splitting the width into equal compartments."
+    },
+    {
+      "id": "ndy",
+      "group": "inside",
+      "label": "Dividers front-back",
+      "type": "int",
+      "unit": "",
+      "min": 0,
+      "max": 9,
+      "step": 1,
+      "default": 0,
+      "help": "Number of walls running side to side, splitting the depth into equal compartments."
+    },
+    {
+      "id": "div_t",
+      "group": "inside",
+      "label": "Divider thickness",
+      "type": "float",
+      "unit": "mm",
+      "min": 0.8,
+      "max": 2.4,
+      "step": 0.05,
+      "default": 1.2,
+      "help": "Thickness of each divider wall."
+    },
+    {
+      "id": "div_drop",
+      "group": "inside",
+      "label": "Divider height reduction",
+      "type": "float",
+      "unit": "mm",
+      "min": 0,
+      "max": 60,
+      "step": 0.5,
+      "default": 0,
+      "help": "Make dividers lower than the walls so you can reach over them. 0 is full height."
+    },
+    {
+      "id": "label",
+      "group": "inside",
+      "label": "Label shelf",
+      "type": "bool",
+      "default": true,
+      "help": "A shelf along the back wall for a printed or written label. Its underside is angled at 45° so it prints without supports."
+    },
+    {
+      "id": "label_w",
+      "group": "inside",
+      "label": "Label shelf depth",
+      "type": "float",
+      "unit": "mm",
+      "min": 6,
+      "max": 20,
+      "step": 0.5,
+      "default": 12,
+      "requires": "label",
+      "help": "How far the label shelf sticks out from the back wall. 12 mm suits common label tapes."
+    },
+    {
+      "id": "scoop",
+      "group": "inside",
+      "label": "Finger scoop",
+      "type": "bool",
+      "default": false,
+      "help": "A curved ramp at the front of the floor so small parts slide out on a fingertip."
+    },
+    {
+      "id": "scoop_r",
+      "group": "inside",
+      "label": "Scoop radius",
+      "type": "float",
+      "unit": "mm",
+      "min": 5,
+      "max": 30,
+      "step": 0.5,
+      "default": 10,
+      "requires": "scoop",
+      "help": "Radius of the scoop curve."
+    },
+    {
+      "id": "magnets",
+      "group": "base",
+      "label": "Magnet holes",
+      "type": "bool",
+      "default": false,
+      "help": "Four holes under each grid square for press-fit or glued disc magnets."
+    },
+    {
+      "id": "mag_d",
+      "group": "base",
+      "label": "Magnet diameter",
+      "type": "float",
+      "unit": "mm",
+      "min": 4,
+      "max": 8.5,
+      "step": 0.05,
+      "default": 6.5,
+      "requires": "magnets",
+      "help": "Hole diameter. 6.5 mm fits standard 6 x 2 mm magnets with glue clearance; try 6.1 to 6.2 for a press fit."
+    },
+    {
+      "id": "mag_h",
+      "group": "base",
+      "label": "Magnet depth",
+      "type": "float",
+      "unit": "mm",
+      "min": 1,
+      "max": 3.5,
+      "step": 0.05,
+      "default": 2.4,
+      "requires": "magnets",
+      "help": "Hole depth. 2.4 mm suits 2 mm thick magnets."
+    },
+    {
+      "id": "screws",
+      "group": "base",
+      "label": "Screw holes",
+      "type": "bool",
+      "default": false,
+      "help": "Four holes under each grid square for screws that fix the bin to a baseplate."
+    },
+    {
+      "id": "screw_d",
+      "group": "base",
+      "label": "Screw hole diameter",
+      "type": "float",
+      "unit": "mm",
+      "min": 2,
+      "max": 4,
+      "step": 0.05,
+      "default": 3,
+      "requires": "screws",
+      "help": "3 mm suits M3 screws self-tapping into the bin."
+    },
+    {
+      "id": "screw_h",
+      "group": "base",
+      "label": "Screw hole depth",
+      "type": "float",
+      "unit": "mm",
+      "min": 3,
+      "max": 12,
+      "step": 0.5,
+      "default": 6,
+      "requires": "screws",
+      "help": "Depth from the bottom. It must stay at least 1 mm below the inside floor."
+    }
+  ],
+  "checks": [
+    {
+      "expr": "floor_z - 4.75 >= 1.0",
+      "message": "Floor height must be at least 5.75 mm so the floor is at least 1 mm thick."
+    },
+    {
+      "expr": "gz*7 - floor_z >= 6",
+      "message": "The bin is too short for this floor height: increase Height or lower the floor."
+    },
+    {
+      "expr": "(gx*42 - 0.5 - 2*wall - ndx*div_t)/(ndx+1) >= 8",
+      "message": "Too many dividers across: each compartment would be narrower than 8 mm."
+    },
+    {
+      "expr": "(gy*42 - 0.5 - 2*wall - ndy*div_t)/(ndy+1) >= 8",
+      "message": "Too many dividers front to back: each compartment would be narrower than 8 mm."
+    },
+    {
+      "expr": "not label or label_w + 1.2 <= gz*7 - (2.6 - wall)*lip - floor_z + 1",
+      "message": "The label shelf is too deep for this bin height: make it shallower or the bin taller."
+    },
+    {
+      "expr": "not label or label_w <= (gy*42 - 0.5 - 2*wall)/2",
+      "message": "The label shelf would cover more than half of the bin's depth."
+    },
+    {
+      "expr": "not scoop or scoop_r <= gz*7 - floor_z - 2",
+      "message": "The scoop is taller than the bin's inside: lower the scoop radius."
+    },
+    {
+      "expr": "not scoop or scoop_r <= (gy*42 - 0.5 - 2*wall)/2",
+      "message": "The scoop radius is more than half the bin's depth."
+    },
+    {
+      "expr": "div_drop <= gz*7 - floor_z - 3",
+      "message": "Divider height reduction is larger than the bin is deep."
+    },
+    {
+      "expr": "not screws or screw_h <= floor_z - 1",
+      "message": "Screw holes would break through the floor: make them shallower or raise the floor."
+    },
+    {
+      "expr": "not (screws and magnets) or screw_d < mag_d",
+      "message": "Screw holes must be narrower than magnet holes when both are on."
+    }
+  ],
+  "presets": [
+    {
+      "name": "Small parts",
+      "help": "Screws, nuts, electronics",
+      "values": {
+        "gx": 2,
+        "gy": 1,
+        "gz": 3,
+        "ndx": 2,
+        "scoop": true,
+        "scoop_r": 10,
+        "label": true
+      }
+    },
+    {
+      "name": "Heavy tools",
+      "help": "Thick walls for wrenches and pliers",
+      "values": {
+        "gx": 3,
+        "gy": 2,
+        "gz": 6,
+        "wall": 2.2,
+        "floor_z": 8,
+        "label": true,
+        "magnets": true
+      }
+    },
+    {
+      "name": "Kitchen drawer",
+      "help": "Spice jars, utensils, clips",
+      "values": {
+        "gx": 2,
+        "gy": 3,
+        "gz": 4,
+        "ndy": 1,
+        "label": false,
+        "scoop": false
+      }
+    },
+    {
+      "name": "Desk tray",
+      "help": "Low, flat-topped tray for pens and cables",
+      "values": {
+        "gx": 4,
+        "gy": 2,
+        "gz": 2,
+        "lip": false,
+        "ndx": 2,
+        "label": false
+      }
+    },
+    {
+      "name": "Bathroom",
+      "help": "Cosmetics and toiletries, easy to wipe",
+      "values": {
+        "gx": 2,
+        "gy": 2,
+        "gz": 6,
+        "label": false,
+        "scoop": true,
+        "scoop_r": 15
+      }
+    }
+  ]
+}

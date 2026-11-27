@@ -71,6 +71,18 @@ REFERENCES = {
         {"gx": 4, "gy": 1, "gz": 2, "ndx": 3, "label": False, "wall": 1.2, "lip_flat": 0.8},
         {"gx": 1, "gy": 3, "gz": 8, "ndy": 2, "scoop": True, "scoop_r": 20, "div_drop": 10, "label_w": 16},
     ]},
+    # v3: LabelTabClip trims the label shelf at the floor (it reached into the feet in short bins)
+    "bin/v3": {"features": {**_bin, "label": {"suppress_off": ["LabelTabBlock", "LabelTabChamfer", "LabelTabClip", "LabelTab"]}},
+               "engraved": True, "cases": [
+        {}, {"gx": 1, "gy": 1, "gz": 3},
+        {"gx": 3, "gy": 2, "gz": 6, "wall": 2.2, "ndx": 2, "ndy": 1, "scoop": True, "magnets": True},
+        {"gx": 2, "gy": 2, "gz": 4, "lip": False, "label": False, "screws": True, "floor_z": 9},
+        {"gx": 4, "gy": 1, "gz": 2, "ndx": 3, "label": False, "wall": 1.2, "lip_flat": 0.8},
+        {"gx": 1, "gy": 3, "gz": 8, "ndy": 2, "scoop": True, "scoop_r": 20, "div_drop": 10, "label_w": 16},
+        {"gx": 2, "gy": 1, "gz": 2},
+        {"gx": 1, "gy": 1, "gz": 2, "label_w": 20, "wall": 1.2, "ndx": 1},
+        {"gx": 3, "gy": 1, "gz": 3, "label_w": 20, "lip": False, "magnets": True},
+    ]},
     "baseplate/v1": {"features": _bp, "engraved": True, "cases": [
         {}, {"gx": 4, "gy": 3, "pad_x": 0, "pad_y": 0},
         {"gx": 3, "gy": 2, "floor_t": 5, "magnets": True, "screws": True},

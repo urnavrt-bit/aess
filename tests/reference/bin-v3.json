@@ -1,0 +1,142 @@
+{
+ "reference": "bin/v3",
+ "cases": [
+  {
+   "values": {},
+   "volume_mm3": 35622.64,
+   "size_mm": [
+    83.5,
+    41.5,
+    25.0
+   ]
+  },
+  {
+   "values": {
+    "gx": 1,
+    "gy": 1,
+    "gz": 3
+   },
+   "volume_mm3": 18670.65,
+   "size_mm": [
+    41.5,
+    41.5,
+    25.0
+   ]
+  },
+  {
+   "values": {
+    "gx": 3,
+    "gy": 2,
+    "gz": 6,
+    "wall": 2.2,
+    "ndx": 2,
+    "ndy": 1,
+    "scoop": true,
+    "magnets": true
+   },
+   "volume_mm3": 121147.81,
+   "size_mm": [
+    125.5,
+    83.5,
+    46.0
+   ]
+  },
+  {
+   "values": {
+    "gx": 2,
+    "gy": 2,
+    "gz": 4,
+    "lip": false,
+    "label": false,
+    "screws": true,
+    "floor_z": 9
+   },
+   "volume_mm3": 66436.42,
+   "size_mm": [
+    83.5,
+    83.5,
+    28.0
+   ]
+  },
+  {
+   "values": {
+    "gx": 4,
+    "gy": 1,
+    "gz": 2,
+    "ndx": 3,
+    "label": false,
+    "wall": 1.2,
+    "lip_flat": 0.8
+   },
+   "volume_mm3": 50645.54,
+   "size_mm": [
+    167.5,
+    41.5,
+    17.6
+   ]
+  },
+  {
+   "values": {
+    "gx": 1,
+    "gy": 3,
+    "gz": 8,
+    "ndy": 2,
+    "scoop": true,
+    "scoop_r": 20,
+    "div_drop": 10,
+    "label_w": 16
+   },
+   "volume_mm3": 72454.17,
+   "size_mm": [
+    41.5,
+    125.5,
+    60.0
+   ]
+  },
+  {
+   "values": {
+    "gx": 2,
+    "gy": 1,
+    "gz": 2
+   },
+   "volume_mm3": 30847.62,
+   "size_mm": [
+    83.5,
+    41.5,
+    18.0
+   ]
+  },
+  {
+   "values": {
+    "gx": 1,
+    "gy": 1,
+    "gz": 2,
+    "label_w": 20,
+    "wall": 1.2,
+    "ndx": 1
+   },
+   "volume_mm3": 17395.46,
+   "size_mm": [
+    41.5,
+    41.5,
+    18.0
+   ]
+  },
+  {
+   "values": {
+    "gx": 3,
+    "gy": 1,
+    "gz": 3,
+    "label_w": 20,
+    "lip": false,
+    "magnets": true
+   },
+   "volume_mm3": 62906.84,
+   "size_mm": [
+    125.5,
+    41.5,
+    21.0
+   ]
+  }
+ ]
+}
